@@ -1,0 +1,15 @@
+﻿@page
+@model Lootcouncil.Pages.Setup.ExpansionModel
+@{
+}
+
+<ul class="demo-list-item mdl-list">
+    @foreach (var expansion in Model.Expansions.Tiers)
+    {
+        <li class="mdl-list__item">
+            <a class="mdl-list__item-primary-content" asp-area="" asp-page="/Setup/Instance" asp-route-id="@(expansion.Id)">
+                @expansion.Name
+            </a>
+        </li>
+    }
+</ul>

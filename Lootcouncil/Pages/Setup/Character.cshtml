@@ -1,0 +1,11 @@
+﻿@page
+@model Lootcouncil.Pages.Setup.CharacterModel
+@{
+}
+
+<ul>
+    @foreach (var item in Model.EquippedItems)
+    {
+        <li>@item.Name (@(item.Level.Value))</li>
+    }
+</ul>

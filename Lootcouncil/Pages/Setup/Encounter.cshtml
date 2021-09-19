@@ -1,0 +1,15 @@
+﻿@page
+@model Lootcouncil.Pages.Setup.EncounterModel
+@{
+}
+
+<ul class="demo-list-item mdl-list">
+    @foreach (var itemContainer in Model.Encounter.Items)
+    {
+        <li class="mdl-list__item">
+            <span class="mdl-list__item-primary-content">
+                @itemContainer.Item.Name
+            </span>
+        </li>
+    }
+</ul>

@@ -1,0 +1,15 @@
+﻿@page
+@model Lootcouncil.Pages.Setup.EncountersModel
+@{
+}
+
+<ul class="demo-list-item mdl-list">
+    @foreach (var encounter in Model.Instance.Encounters)
+    {
+        <li class="mdl-list__item">
+            <a class="mdl-list__item-primary-content" asp-area="" asp-page="/Setup/Encounter" asp-route-id="@(encounter.Id)">
+                @encounter.Name
+            </a>
+        </li>
+    }
+</ul>

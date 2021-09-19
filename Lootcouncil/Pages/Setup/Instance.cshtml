@@ -1,0 +1,29 @@
+﻿@page
+@model Lootcouncil.Pages.Setup.InstanceModel
+@{
+}
+
+<ul class="demo-list-item mdl-list">
+    <li class="mdl-list__item">
+        <h2>Dungeons</h2>
+    </li>
+    @foreach (var dungeon in Model.Instances.Dungeons)
+    {
+        <li class="mdl-list__item">
+            <a class="mdl-list__item-primary-content" asp-area="" asp-page="/Setup/Encounters" asp-route-id="@(dungeon.Id)">
+                @dungeon.Name
+            </a>
+        </li>
+    }
+    <li class="mdl-list__item">
+        <h2>Raids</h2>
+    </li>
+    @foreach (var raid in Model.Instances.Raids)
+    {
+        <li class="mdl-list__item">
+            <a class="mdl-list__item-primary-content" asp-area="" asp-page="/Setup/Encounters" asp-route-id="@(raid.Id)">
+                @raid.Name
+            </a>
+        </li>
+    }
+</ul>
