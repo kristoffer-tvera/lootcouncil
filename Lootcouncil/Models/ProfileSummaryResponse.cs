@@ -1,9 +1,6 @@
 ﻿using Lootcouncil.Models.Shared;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 
 namespace Lootcouncil.Models
 {

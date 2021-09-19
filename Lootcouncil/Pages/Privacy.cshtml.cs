@@ -20,8 +20,6 @@ namespace Lootcouncil.Pages
 
         public async Task OnGetAsync()
         {
-            await _api.Setup();
-            var debug = await _api.GetJournalExpansionIndexResponse();
         }
     }
 }

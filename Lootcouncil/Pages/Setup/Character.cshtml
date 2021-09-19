@@ -3,9 +3,18 @@
 @{
 }
 
+
+
 <ul>
     @foreach (var item in Model.EquippedItems)
     {
         <li>@item.Name (@(item.Level.Value))</li>
     }
 </ul>
+
+<form method="post">
+    <input type="hidden" name="id" value="@Model.CharacterId" />
+    <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
+        Set this as your main
+    </button>
+</form>

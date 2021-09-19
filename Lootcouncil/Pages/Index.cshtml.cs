@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc.RazorPages;
+﻿using Lootcouncil.Extensions;
+using Lootcouncil.Models.Shared;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 
 namespace Lootcouncil.Pages
@@ -7,6 +9,9 @@ namespace Lootcouncil.Pages
     {
         private readonly ILogger<IndexModel> _logger;
 
+        public bool IsLoggedIn { get; set; }
+        public string CharacterName { get; set; }
+
         public IndexModel(ILogger<IndexModel> logger)
         {
             _logger = logger;
@@ -14,7 +19,12 @@ namespace Lootcouncil.Pages
 
         public void OnGet()
         {
-
+            IsLoggedIn = User.Identity.IsAuthenticated;
+            var character = HttpContext.Session.Get<Character>(nameof(Character));
+            if(character != null)
+            {
+                CharacterName = character.Name;
+            }
         }
     }
 }

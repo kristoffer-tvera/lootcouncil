@@ -4,7 +4,23 @@
     ViewData["Title"] = "Home page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Select a expansion <a asp-area="" asp-page="/Setup/Expansion">here</a>.</p>
-</div>
+@if (Model.IsLoggedIn)
+{
+    <div class="text-center">
+        <h1 class="display-4">Welcome</h1>
+        <p>Select a expansion <a asp-area="" asp-page="/Setup/Expansion">here</a>.</p>
+        @if (!string.IsNullOrWhiteSpace(Model.CharacterName))
+        {
+            <p>Current main: @Model.CharacterName.</p>
+
+        }
+        <p>Pick a main <a asp-area="" asp-page="/Setup/Characters">here</a>.</p>
+    </div>
+}
+else
+{
+    <div class="text-center">
+        <h1 class="display-4">Welcome</h1>
+        <p>Click <a asp-area="" asp-page="/Auth/Signin">here</a> to sign in (using Battle.net)</p>
+    </div>
+}

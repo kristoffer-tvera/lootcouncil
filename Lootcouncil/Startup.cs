@@ -1,6 +1,5 @@
 using Lootcouncil.Models;
 using Lootcouncil.Repository;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
@@ -10,7 +9,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
-using System;
 
 namespace Lootcouncil
 {
@@ -25,7 +23,14 @@ namespace Lootcouncil
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddRazorPages();
+            services.AddRazorPages(options =>
+            {
+                options.Conventions.AuthorizeFolder("/Auth");
+                options.Conventions.AuthorizeFolder("/Setup");
+            });
+
+            services.AddSession();
+            
             services.AddRouting(options => options.LowercaseUrls = true);
 
             services.Configure<BlizzardSettings>(Configuration.GetSection(BlizzardSettings.Section));
@@ -88,6 +93,8 @@ namespace Lootcouncil
             app.UseStaticFiles();
 
             app.UseRouting();
+
+            app.UseSession();
 
             app.UseAuthentication();
             app.UseAuthorization();

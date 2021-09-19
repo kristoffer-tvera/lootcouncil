@@ -1,11 +1,9 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Lootcouncil.Models.Shared;
 using Lootcouncil.Repository;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 
@@ -16,7 +14,7 @@ namespace Lootcouncil.Pages.Setup
         private readonly ILogger<CharactersModel> _logger;
         private readonly IApiRepository _api;
 
-        public IEnumerable<Character> Characters { get; set; }
+        public IEnumerable<IGrouping<string, Character>> CharactersByRealm { get; set; }
 
 
         public CharactersModel(ILogger<CharactersModel> logger, IApiRepository api)
@@ -37,7 +35,7 @@ namespace Lootcouncil.Pages.Setup
                 characters.AddRange(account.Characters);
             }
 
-            Characters = characters.Where(c => c.Level > 10).OrderBy(c => c.Realm.Slug).ThenBy(c => c.Level);
+            CharactersByRealm = characters.GroupBy(c => c.Realm.Name);
         }
     }
 }
