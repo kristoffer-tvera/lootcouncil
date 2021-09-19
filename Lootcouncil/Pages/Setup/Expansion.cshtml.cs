@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using Lootcouncil.Extensions;
 using Lootcouncil.Models;
 using Lootcouncil.Repository;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -21,8 +22,7 @@ namespace Lootcouncil.Pages.Setup
 
         public async Task OnGetAsync()
         {
-            await _api.Setup();
-            Expansions = await _api.GetJournalExpansionIndexResponse();
+            Expansions = await _api.GetJournalExpansionIndexResponse(HttpContext.Request.Cookies.GetRegion());
         }
     }
 }

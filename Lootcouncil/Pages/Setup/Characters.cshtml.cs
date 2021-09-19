@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Lootcouncil.Extensions;
 using Lootcouncil.Models.Shared;
 using Lootcouncil.Repository;
 using Microsoft.AspNetCore.Authentication;
@@ -27,7 +28,7 @@ namespace Lootcouncil.Pages.Setup
         {
             var accessToken = await HttpContext.GetTokenAsync("access_token");
 
-            var profile = await _api.GetProfileSummary("eu", accessToken);
+            var profile = await _api.GetProfileSummary(HttpContext.Request.Cookies.GetRegion(), accessToken); ;
 
             var characters = new List<Character>();
             foreach (var account in profile.WowAccounts)
@@ -37,5 +38,6 @@ namespace Lootcouncil.Pages.Setup
 
             CharactersByRealm = characters.GroupBy(c => c.Realm.Name);
         }
+
     }
 }

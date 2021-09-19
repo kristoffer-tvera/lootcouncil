@@ -18,18 +18,18 @@ namespace Lootcouncil.Repository
         {
             _expiry = DateTime.UtcNow;
             _option = options.Value;
-            _client = new RestClient($"https://{_option.Region}.api.blizzard.com");
+            _client = new RestClient();
             _client.UseSystemTextJson();
         }
 
-        public async Task Setup()
+        public async Task Setup(string region)
         {
             if (_expiry >= DateTime.UtcNow.AddSeconds(30))
             {
                 return;
             }
 
-            var client = new RestClient($"https://{_option.Region}.battle.net")
+            var client = new RestClient($"https://{region}.battle.net")
             {
                 Authenticator = new HttpBasicAuthenticator(_option.ClientId, _option.ClientSecret)
             };
@@ -44,29 +44,29 @@ namespace Lootcouncil.Repository
             _accessToken = response.Data.AccessToken;
         }
 
-        public async Task<JournalExpansionIndexResponse> GetJournalExpansionIndexResponse()
+        public async Task<JournalExpansionIndexResponse> GetJournalExpansionIndexResponse(string region)
         {
-            return await ExecuteRequest<JournalExpansionIndexResponse>("data/wow/journal-expansion/index", "static", _option.Region);
+            return await ExecuteRequest<JournalExpansionIndexResponse>("data/wow/journal-expansion/index", "static", region);
         }
 
-        public async Task<JournalExpansionResponse> GetJournalExpansionResponse(int id)
+        public async Task<JournalExpansionResponse> GetJournalExpansionResponse(int id, string region)
         {
-            return await ExecuteRequest<JournalExpansionResponse>($"data/wow/journal-expansion/{id}", "static", _option.Region);
+            return await ExecuteRequest<JournalExpansionResponse>($"data/wow/journal-expansion/{id}", "static", region);
         }
 
-        public async Task<JournalInstanceResponse> GetJournalInstanceResponse(int id)
+        public async Task<JournalInstanceResponse> GetJournalInstanceResponse(int id, string region)
         {
-            return await ExecuteRequest<JournalInstanceResponse>($"data/wow/journal-instance/{id}", "static", _option.Region);
+            return await ExecuteRequest<JournalInstanceResponse>($"data/wow/journal-instance/{id}", "static", region);
         }
 
-        public async Task<JournalEncounterResponse> GetJournalEncounterResponse(int id)
+        public async Task<JournalEncounterResponse> GetJournalEncounterResponse(int id, string region)
         {
-            return await ExecuteRequest<JournalEncounterResponse>($"data/wow/journal-encounter/{id}", "static", _option.Region);
+            return await ExecuteRequest<JournalEncounterResponse>($"data/wow/journal-encounter/{id}", "static", region);
         }
 
-        public async Task<ItemResponse> GetItemResponse(int id)
+        public async Task<ItemResponse> GetItemResponse(int id, string region)
         {
-            return await ExecuteRequest<ItemResponse>($"/data/wow/item/{id}", "static", _option.Region);
+            return await ExecuteRequest<ItemResponse>($"/data/wow/item/{id}", "static", region);
         }
 
         public async Task<GuildResponse> GetGuildResponse(string realm, string name, string region)
@@ -89,54 +89,28 @@ namespace Lootcouncil.Repository
             return await ExecuteRequest<CharacterEquipmentResponse>($"profile/wow/character/{realm}/{name}/equipment", "profile", region);
         }
 
-        public async Task<ProfileSummaryResponse> GetProfileSummary(string region, string accessToken)
+        public async Task<CharacterResponse> GetCharacterResponse(string realm, string name, string region)
         {
-            //var client = new RestClient($"https://{_option.Region}.api.blizzard.com");
-            //client.AddDefaultHeader("Authorization", $"Bearer {accessToken}");
-            //client.UseSystemTextJson();
-            //var request = new RestRequest("profile/user/wow");
-            //request.AddParameter("namespace", $"profile-{_option.Region}");
-            //request.AddParameter("locale", _option.Locale);
-            //var response = await client.ExecuteAsync(request);
-            //var pepe = true;
-
-
-            return await ExecuteRequest<ProfileSummaryResponse>($"profile/user/wow", "profile", region, accessToken);
-
+            return await ExecuteRequest<CharacterResponse>($"profile/wow/character/{realm}/{name}", "profile", region);
         }
 
-        public async Task<string> GetAccessTokenFromAuthorizationCode(string code)
+        public async Task<ItemMediaResponse> GetItemMediaResponse(string itemId, string region)
         {
-            var client = new RestClient($"https://{_option.Region}.battle.net")
-            {
-                Authenticator = new HttpBasicAuthenticator(_option.ClientId, _option.ClientSecret)
-            };
+            return await ExecuteRequest<ItemMediaResponse>($"data/wow/media/item/{itemId}", "static", region);
+        }
 
-            client.UseSystemTextJson();
-            var request = new RestRequest("oauth/token", Method.POST);
-
-            request.AddParameter("redirect_uri", _option.Redirect);
-            request.AddParameter("scope", "wow.profile");
-            request.AddParameter("grant_type", "authorization_code");
-            request.AddParameter("code", code);
-            request.AddParameter("client_id", _option.ClientId);
-
-            var response = await client.ExecuteAsync<AuthToken>(request);
-
-            if (!response.IsSuccessful && response.ErrorException != null) throw response.ErrorException;
-
-            return response.Data.AccessToken;
+        public async Task<ProfileSummaryResponse> GetProfileSummary(string region, string accessToken)
+        {
+            return await ExecuteRequest<ProfileSummaryResponse>($"profile/user/wow", "profile", region, accessToken);
         }
 
         private async Task<T> ExecuteRequest<T>(string path, string ns, string region, string accessToken = "")
         {
             _client.BaseUrl = new Uri($"https://{region}.api.blizzard.com");
-            //_client = new RestClient($"https://{region}.api.blizzard.com");
-            //_client.UseSystemTextJson();
 
             if (string.IsNullOrWhiteSpace(accessToken))
             {
-                await Setup();
+                await Setup(region);
                 accessToken = _accessToken;
             }
 

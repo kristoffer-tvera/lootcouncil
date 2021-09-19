@@ -28,16 +28,18 @@ namespace Lootcouncil.Pages.Setup
 
         public async Task OnGetAsync(string realm, string name)
         {
-            var equipment = await _api.GetCharacterEquipmentResponse(realm, name.ToLower(), "eu");
+            var equipment = await _api.GetCharacterEquipmentResponse(realm, name.ToLower(), HttpContext.Request.Cookies.GetRegion());
             EquippedItems = equipment.EquippedItems;
             CharacterId = equipment.Character.Id;
+
+            var character = await _api.get
         }
 
         public async Task<IActionResult> OnPostAsync(int id)
         {
             var accessToken = await HttpContext.GetTokenAsync("access_token");
 
-            var profile = await _api.GetProfileSummary("eu", accessToken);
+            var profile = await _api.GetProfileSummary(HttpContext.Request.Cookies.GetRegion(), accessToken);
 
             Character character = null;
             foreach (var account in profile.WowAccounts)

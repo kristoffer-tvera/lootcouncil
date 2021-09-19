@@ -57,6 +57,11 @@
                 <div class="mdl-logo">&copy; @(DateTime.UtcNow.Year) - Lootcouncil</div>
                 <ul class="mdl-mini-footer__link-list">
                     <li><a asp-area="" asp-page="/Privacy">Privacy</a></li>
+                    @foreach (var region in Constants.Regions)
+                    {
+                        var currentRegion = string.Equals(region, Context.Request.Cookies["region"]);
+                        <li class="@(currentRegion ? "active" : "")"><a asp-controller="Config" asp-action="SetRegion" asp-route-region="@region" asp-route-returnUrl="@(Context.Request.Path)">@region</a></li>
+                    }
                 </ul>
             </div>
         </footer>

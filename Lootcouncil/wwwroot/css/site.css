@@ -31,3 +31,8 @@ body {
 .text--center{
     text-align: center!important;
 }
+
+.mdl-mini-footer__link-list>.active>a {
+    border-bottom: 2px solid;
+    padding-bottom: 2px;
+}

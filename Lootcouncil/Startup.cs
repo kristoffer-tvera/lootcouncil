@@ -34,7 +34,7 @@ namespace Lootcouncil
             services.AddRouting(options => options.LowercaseUrls = true);
 
             services.Configure<BlizzardSettings>(Configuration.GetSection(BlizzardSettings.Section));
-            services.AddTransient<IApiRepository, ApiRepository>();
+            services.AddScoped<IApiRepository, ApiRepository>();
             
             services.AddAuthentication(options =>
             {
@@ -61,17 +61,6 @@ namespace Lootcouncil
                     options.Scope.Add("openid");
                     options.Scope.Add("id_token");
                     options.Scope.Add("wow.profile");
-
-                    //options.Events = new OpenIdConnectEvents
-                    //{
-                    //    OnTokenValidated = async ctx =>
-                    //    {
-                    //        foreach(var claim in ctx.Principal.Claims)
-                    //        {
-                    //            Console.WriteLine($"Claim name:{claim.Type} , claim value:{claim.Value}");
-                    //        }
-                    //    }
-                    //};
                 });
 
         }
@@ -102,6 +91,7 @@ namespace Lootcouncil
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapRazorPages();
+                endpoints.MapControllers();
             });
 
             IdentityModelEventSource.ShowPII = true;
