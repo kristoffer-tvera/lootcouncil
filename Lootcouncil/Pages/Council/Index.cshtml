@@ -1,0 +1,18 @@
+﻿@page "{id:int?}"
+@model Lootcouncil.Pages.Council.IndexModel
+@{
+    ViewData["Title"] = "Council";
+}
+
+@if (Model.Id > 0)
+{
+    <p>See all encounters for raid</p>
+    <p>See all loot from all encounters</p>
+    <p>Update my choices <a asp-area="" asp-page="/Council/Me" asp-route-id="69">here</a></p>
+}
+else
+{
+    <p>Pick a raid</p>
+    <p>Pick players</p>
+    <p>Open council 69 <a asp-area="" asp-page="/Council/Index" asp-route-id="69">here</a></p>
+}

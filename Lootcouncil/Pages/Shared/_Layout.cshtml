@@ -23,6 +23,8 @@
                     <a class="mdl-navigation__link" asp-area="" asp-page="/Index">Home</a>
                     @if (User.Identity.IsAuthenticated)
                     {
+                        <a class="mdl-navigation__link" asp-area="" asp-page="/Guild">My Guild</a>
+                        <a class="mdl-navigation__link" asp-area="" asp-page="/Council/Index">Council</a>
                         <a class="mdl-navigation__link" href="#" id="account-button">@(User.GetBattleTag())</a>
                     }
                 </nav>
@@ -41,7 +43,7 @@
                 @if (User.Identity.IsAuthenticated)
                 {
                     <a class="mdl-navigation__link" asp-area="" asp-page="/Setup/Characters">My characters</a>
-                    <a class="mdl-navigation__link" asp-area="" asp-page="/Privacy">My guild</a>
+                    <a class="mdl-navigation__link" asp-area="" asp-page="/Guild">My guild</a>
                     <a class="mdl-navigation__link" asp-area="" asp-page="/Auth/Signout">Sign out</a>
                 }
                 <a class="mdl-navigation__link" asp-area="" asp-page="/Privacy">Privacy</a>

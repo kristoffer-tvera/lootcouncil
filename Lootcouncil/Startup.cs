@@ -27,6 +27,7 @@ namespace Lootcouncil
             {
                 options.Conventions.AuthorizeFolder("/Auth");
                 options.Conventions.AuthorizeFolder("/Setup");
+                options.Conventions.AuthorizeFolder("/Council");
             });
 
             services.AddSession();

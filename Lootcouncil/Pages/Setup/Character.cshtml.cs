@@ -28,11 +28,11 @@ namespace Lootcouncil.Pages.Setup
 
         public async Task OnGetAsync(string realm, string name)
         {
-            var equipment = await _api.GetCharacterEquipmentResponse(realm, name.ToLower(), HttpContext.Request.Cookies.GetRegion());
+            var equipment = await _api.GetCharacterEquipmentResponse(realm, name.ToLower(), Request.Cookies.GetRegion());
             EquippedItems = equipment.EquippedItems;
             CharacterId = equipment.Character.Id;
 
-            var character = await _api.get
+            var character = await _api.GetCharacterResponse(realm, name.ToLower(), Request.Cookies.GetRegion());
         }
 
         public async Task<IActionResult> OnPostAsync(int id)

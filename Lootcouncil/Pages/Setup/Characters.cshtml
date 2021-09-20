@@ -1,6 +1,7 @@
 ﻿@page
 @model Lootcouncil.Pages.Setup.CharactersModel
 @{
+    ViewData["Title"] = "Characters";
 }
 
 @foreach (var realm in Model.CharactersByRealm.OrderBy(r => r.Key))
@@ -20,18 +21,18 @@
         <tbody>
             @foreach (var character in realm.OrderByDescending(c => c.Level))
             {
-            <tr>
-                <td class="mdl-data-table__cell--non-numeric">@character.Faction.Name</td>
-                <td class="mdl-data-table__cell--non-numeric">@character.Name</td>
-                <td class="mdl-data-table__cell--non-numeric">@character.PlayableRace.Name</td>
-                <td class="mdl-data-table__cell--non-numeric">@character.PlayableClass.Name</td>
-                <td>@character.Level</td>
-                <td class="mdl-data-table__cell--non-numeric text--center">
-                    <a class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored" asp-area="" asp-page="/Setup/Character" asp-route-realm="@character.Realm.Slug" asp-route-name="@character.Name">
-                        <i class="material-icons">add</i>
-                    </a>
-                </td>
-            </tr>
+                <tr>
+                    <td class="mdl-data-table__cell--non-numeric">@character.Faction.Name</td>
+                    <td class="mdl-data-table__cell--non-numeric">@character.Name</td>
+                    <td class="mdl-data-table__cell--non-numeric">@character.PlayableRace.Name</td>
+                    <td class="mdl-data-table__cell--non-numeric">@character.PlayableClass.Name</td>
+                    <td>@character.Level</td>
+                    <td class="mdl-data-table__cell--non-numeric text--center">
+                        <a class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored" asp-area="" asp-page="/Setup/Character" asp-route-realm="@character.Realm.Slug" asp-route-name="@character.Name">
+                            <i class="material-icons">add</i>
+                        </a>
+                    </td>
+                </tr>
             }
         </tbody>
     </table>
