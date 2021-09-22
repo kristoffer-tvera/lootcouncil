@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Lootcouncil.Extensions;
+using Lootcouncil.Models;
 using Lootcouncil.Models.Shared;
 using Lootcouncil.Repository;
 using Microsoft.AspNetCore.Authentication;
@@ -31,15 +32,14 @@ namespace Lootcouncil.Pages.Setup
             var equipment = await _api.GetCharacterEquipmentResponse(realm, name.ToLower(), Request.Cookies.GetRegion());
             EquippedItems = equipment.EquippedItems;
             CharacterId = equipment.Character.Id;
-
-            var character = await _api.GetCharacterResponse(realm, name.ToLower(), Request.Cookies.GetRegion());
         }
 
         public async Task<IActionResult> OnPostAsync(int id)
         {
             var accessToken = await HttpContext.GetTokenAsync("access_token");
+            var region = Request.Cookies.GetRegion();
 
-            var profile = await _api.GetProfileSummary(HttpContext.Request.Cookies.GetRegion(), accessToken);
+            var profile = await _api.GetProfileSummary(region, accessToken);
 
             Character character = null;
             foreach (var account in profile.WowAccounts)
@@ -51,7 +51,16 @@ namespace Lootcouncil.Pages.Setup
                 }
             }
 
-            HttpContext.Session.Set(nameof(Character), character);
+            if(character == null)
+            {
+                return Redirect("/");
+            }
+
+            var characterResponse = await _api.GetCharacterResponse(character.Realm.Slug, character.Name, region);
+
+            HttpContext.Session.Set(nameof(CharacterResponse), characterResponse);
+            Response.Cookies.Append(Constants.CookieCharacter, character.Name);
+            Response.Cookies.Append(Constants.CookieRealm, character.Realm.Slug);
 
             return Redirect("/");
         }

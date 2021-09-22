@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
 
 namespace Lootcouncil.Controllers
 {
@@ -7,7 +6,7 @@ namespace Lootcouncil.Controllers
     public class ConfigController : ControllerBase
     {
         [Route("[action]")]
-        public async Task<IActionResult> SetRegion(string region, string returnUrl)
+        public IActionResult SetRegion(string region, string returnUrl)
         {
             Response.Cookies.Append("region", region);
             return Redirect(returnUrl);

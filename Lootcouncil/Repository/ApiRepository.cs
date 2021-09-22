@@ -1,9 +1,11 @@
 ﻿using Lootcouncil.Models;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using RestSharp;
 using RestSharp.Authenticators;
 using RestSharp.Serializers.SystemTextJson;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Lootcouncil.Repository
@@ -14,16 +16,23 @@ namespace Lootcouncil.Repository
         private readonly BlizzardSettings _option;
         private readonly DateTime _expiry;
         private string _accessToken;
-        public ApiRepository(IOptions<BlizzardSettings> options)
+        private readonly IMemoryCache _cache;
+        public ApiRepository(IOptions<BlizzardSettings> options, IMemoryCache cache)
         {
             _expiry = DateTime.UtcNow;
             _option = options.Value;
             _client = new RestClient();
             _client.UseSystemTextJson();
+            _cache = cache;
         }
 
-        public async Task Setup(string region)
+        public async Task Setup(string region = "")
         {
+            if (string.IsNullOrWhiteSpace(region))
+            {
+                region = Constants.Regions.First();
+            }
+
             if (_expiry >= DateTime.UtcNow.AddSeconds(30))
             {
                 return;
@@ -46,62 +55,101 @@ namespace Lootcouncil.Repository
 
         public async Task<JournalExpansionIndexResponse> GetJournalExpansionIndexResponse(string region)
         {
-            return await ExecuteRequest<JournalExpansionIndexResponse>("data/wow/journal-expansion/index", "static", region);
+            return await ExecuteRequest<JournalExpansionIndexResponse>(Constants.CachePolicyAggresive, "data/wow/journal-expansion/index", "static", region); ;
         }
 
         public async Task<JournalExpansionResponse> GetJournalExpansionResponse(int id, string region)
         {
-            return await ExecuteRequest<JournalExpansionResponse>($"data/wow/journal-expansion/{id}", "static", region);
+            return await ExecuteRequest<JournalExpansionResponse>(Constants.CachePolicyHardcore, $"data/wow/journal-expansion/{id}", "static", region);
         }
 
         public async Task<JournalInstanceResponse> GetJournalInstanceResponse(int id, string region)
         {
-            return await ExecuteRequest<JournalInstanceResponse>($"data/wow/journal-instance/{id}", "static", region);
+
+            return await ExecuteRequest<JournalInstanceResponse>(Constants.CachePolicyHardcore, $"data/wow/journal-instance/{id}", "static", region);
         }
 
         public async Task<JournalEncounterResponse> GetJournalEncounterResponse(int id, string region)
         {
-            return await ExecuteRequest<JournalEncounterResponse>($"data/wow/journal-encounter/{id}", "static", region);
+            return await ExecuteRequest<JournalEncounterResponse>(Constants.CachePolicyHardcore, $"data/wow/journal-encounter/{id}", "static", region);
         }
 
         public async Task<ItemResponse> GetItemResponse(int id, string region)
         {
-            return await ExecuteRequest<ItemResponse>($"/data/wow/item/{id}", "static", region);
+            return await ExecuteRequest<ItemResponse>(Constants.CachePolicyHardcore, $"/data/wow/item/{id}", "static", region);
         }
 
         public async Task<GuildResponse> GetGuildResponse(string realm, string name, string region)
         {
-            return await ExecuteRequest<GuildResponse>($"data/wow/guild/{realm}/{name}/roster", "profile", region);
+            return await ExecuteRequest<GuildResponse>(Constants.CachePolicyLight, $"data/wow/guild/{realm}/{name}", "profile", region);
+        }
+
+        public async Task<GuildResponse> GetGuildResponse(string href, string region)
+        {
+            return await ExecuteRequest<GuildResponse>(Constants.CachePolicyLight, href, region);
         }
 
         public async Task<GuildRosterResponse> GetGuildRosterResponse(string realm, string name, string region)
         {
-            return await ExecuteRequest<GuildRosterResponse>($"data/wow/guild/{realm}/{name}/roster", "profile", region);
+            return await ExecuteRequest<GuildRosterResponse>(Constants.CachePolicyLight, $"data/wow/guild/{realm}/{name}/roster", "profile", region);
+        }
+
+        public async Task<GuildRosterResponse> GetGuildRosterResponse(string href, string region)
+        {
+            return await ExecuteRequest<GuildRosterResponse>(Constants.CachePolicyLight, href, region);
         }
 
         public async Task<GuildActivitiesResponse> GetGuildActivitiesResponse(string realm, string name, string region)
         {
-            return await ExecuteRequest<GuildActivitiesResponse>($"data/wow/guild/{realm}/{name}/activity", "profile", region);
+            return await ExecuteRequest<GuildActivitiesResponse>(Constants.CachePolicyLax, $"data/wow/guild/{realm}/{name}/activity", "profile", region);
+        }
+
+        public async Task<GuildActivitiesResponse> GetGuildActivitiesResponse(string href, string region)
+        {
+            return await ExecuteRequest<GuildActivitiesResponse>(Constants.CachePolicyLax, href, region);
         }
 
         public async Task<CharacterEquipmentResponse> GetCharacterEquipmentResponse(string realm, string name, string region)
         {
-            return await ExecuteRequest<CharacterEquipmentResponse>($"profile/wow/character/{realm}/{name}/equipment", "profile", region);
+            return await ExecuteRequest<CharacterEquipmentResponse>(Constants.CachePolicyLax, $"profile/wow/character/{realm}/{name}/equipment", "profile", region);
         }
 
         public async Task<CharacterResponse> GetCharacterResponse(string realm, string name, string region)
         {
-            return await ExecuteRequest<CharacterResponse>($"profile/wow/character/{realm}/{name}", "profile", region);
+            return await ExecuteRequest<CharacterResponse>(Constants.CachePolicyLax, $"profile/wow/character/{realm}/{name}", "profile", region);
         }
 
         public async Task<ItemMediaResponse> GetItemMediaResponse(string itemId, string region)
         {
-            return await ExecuteRequest<ItemMediaResponse>($"data/wow/media/item/{itemId}", "static", region);
+            return await ExecuteRequest<ItemMediaResponse>(Constants.CachePolicyHardcore, $"data/wow/media/item/{itemId}", "static", region);
         }
 
         public async Task<ProfileSummaryResponse> GetProfileSummary(string region, string accessToken)
         {
-            return await ExecuteRequest<ProfileSummaryResponse>($"profile/user/wow", "profile", region, accessToken);
+            return await ExecuteRequest<ProfileSummaryResponse>(Constants.CachePolicyLax, $"profile/user/wow", "profile", region, accessToken);
+        }
+
+        /// <summary>
+        /// Wrapping api call in a cached filter to avoid unneccesary calls to api
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="cacheTime"></param>
+        /// <param name="path"></param>
+        /// <param name="ns"></param>
+        /// <param name="region"></param>
+        /// <param name="accessToken"></param>
+        /// <returns></returns>
+        private async Task<T> ExecuteRequest<T>(int cacheTime, string path, string ns, string region, string accessToken = "")
+        {
+            var cacheKey = string.Concat(path, ns, region, accessToken);
+            if (_cache.TryGetValue<T>(cacheKey, out var response))
+            {
+                return response;
+            }
+
+            response = await ExecuteRequest<T>(path, ns, region, accessToken);
+            _cache.Set(cacheKey, response, DateTime.Now.AddSeconds(cacheTime));
+            return response;
         }
 
         private async Task<T> ExecuteRequest<T>(string path, string ns, string region, string accessToken = "")
@@ -114,7 +162,7 @@ namespace Lootcouncil.Repository
                 accessToken = _accessToken;
             }
 
-            var request = new RestRequest(path, Method.GET);
+            var request = new RestRequest(path.ToLower(), Method.GET);
             request.AddParameter("namespace", $"{ns}-{region}");
             request.AddParameter("locale", _option.Locale);
             request.AddParameter("access_token", accessToken);
@@ -122,6 +170,43 @@ namespace Lootcouncil.Repository
 
             if (!response.IsSuccessful && response.ErrorException != null) throw response.ErrorException;
 
+            return response.Data;
+        }
+
+        /// <summary>
+        /// Wrapping api call in a cached filter to avoid unneccesary calls to api
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="cacheTime"></param>
+        /// <param name="href"></param>
+        /// <param name="region"></param>
+        /// <returns></returns>
+        private async Task<T> ExecuteRequest<T>(int cacheTime, string href, string region)
+        {
+            var cacheKey = string.Concat(href, region);
+            if (_cache.TryGetValue<T>(cacheKey, out var response))
+            {
+                return response;
+            }
+
+            response = await ExecuteRequest<T>(href, region);
+            _cache.Set(cacheKey, response, DateTime.Now.AddSeconds(cacheTime));
+            return response;
+        }
+
+        private async Task<T> ExecuteRequest<T>(string href, string region)
+        {
+            var uri = new Uri(href);
+            await Setup(region);
+
+            _client.BaseUrl = new Uri(uri.GetLeftPart(UriPartial.Authority));
+
+            var request = new RestRequest(uri.PathAndQuery, Method.GET);
+            request.AddParameter("locale", _option.Locale);
+            request.AddParameter("access_token", _accessToken);
+
+            var response = await _client.ExecuteAsync<T>(request);
+            if (!response.IsSuccessful && response.ErrorException != null) throw response.ErrorException;
             return response.Data;
         }
     }

@@ -31,12 +31,14 @@ namespace Lootcouncil
             });
 
             services.AddSession();
+            services.AddMemoryCache();
             
             services.AddRouting(options => options.LowercaseUrls = true);
 
             services.Configure<BlizzardSettings>(Configuration.GetSection(BlizzardSettings.Section));
             services.AddScoped<IApiRepository, ApiRepository>();
-            
+            services.AddScoped<IDbRepository, DbRepository>();
+
             services.AddAuthentication(options =>
             {
                 options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
@@ -50,13 +52,13 @@ namespace Lootcouncil
                 .AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, options =>
                 {
                     options.Authority = Configuration[$"{BlizzardSettings.Section}:Authority"];
-
                     options.ClientId = Configuration[$"{BlizzardSettings.Section}:ClientId"];
                     options.ClientSecret = Configuration[$"{BlizzardSettings.Section}:ClientSecret"];
                     
                     options.ResponseType = OpenIdConnectResponseType.CodeIdToken;
                     options.GetClaimsFromUserInfoEndpoint = true;
                     options.SaveTokens = true;
+                    options.UseTokenLifetime = true;
 
                     options.Scope.Clear();
                     options.Scope.Add("openid");

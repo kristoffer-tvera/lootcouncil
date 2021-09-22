@@ -7,14 +7,16 @@
 @if (Model.IsLoggedIn)
 {
     <div class="text-center">
-        <h1 class="display-4">Welcome</h1>
-        <p>Select a expansion <a asp-area="" asp-page="/Setup/Expansion">here</a>.</p>
+        <h1 class="display-4">Welcome, @(User.GetBattleTag())</h1>
         @if (!string.IsNullOrWhiteSpace(Model.CharacterName))
         {
             <p>Current main: @Model.CharacterName.</p>
-
+            <p>Click <a asp-area="" asp-page="/Setup/Characters">here</a> to change.</p>
         }
-        <p>Pick a main <a asp-area="" asp-page="/Setup/Characters">here</a>.</p>
+        else
+        {
+            <p>Click <a asp-area="" asp-page="/Setup/Characters">here</a> to pick a character as your main.</p>
+        }
     </div>
 }
 else

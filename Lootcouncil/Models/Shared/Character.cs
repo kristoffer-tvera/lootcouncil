@@ -22,6 +22,9 @@ namespace Lootcouncil.Models.Shared
         [JsonPropertyName("realm")]
         public Realm Realm { get; set; }
 
+        //[JsonPropertyName("guild")]
+        //public Guild Guild { get; set; }
+
         [JsonPropertyName("playable_class")]
         public PlayableClass PlayableClass { get; set; }
 

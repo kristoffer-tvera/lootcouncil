@@ -8,3 +8,68 @@
 
 <p>See list of all items in council</p>
 <p>Select BiS / BiS from Raid / Major / Minor / OS for items</p>
+
+<ul>
+
+    @foreach (var encounter in Model.Instance.Encounters)
+    {
+        <li>
+            <h2>@encounter.Name</h2>
+
+        </li>
+    }
+</ul>
+
+
+@foreach (var encounter in Model.Instance.Encounters)
+{
+    var currentEncounter = Model.Encounters.FirstOrDefault(e => e.Id == encounter.Id);
+    <h2>@encounter.Name</h2>
+    <table class="mdl-data-table mdl-js-data-table w--100">
+        <thead>
+            <tr>
+                <th class="mdl-data-table__cell--non-numeric">Id</th>
+                <th class="mdl-data-table__cell--non-numeric">Name</th>
+                <th class="mdl-data-table__cell--non-numeric">BiS</th>
+                <th class="mdl-data-table__cell--non-numeric">Major</th>
+                <th class="mdl-data-table__cell--non-numeric">Minor</th>
+                <th class="mdl-data-table__cell--non-numeric">Os/Xmog</th>
+                <th class="mdl-data-table__cell--non-numeric">Pass</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var itemContainer in currentEncounter.Items)
+            {
+                <tr>
+                    <td class="mdl-data-table__cell--non-numeric">@itemContainer.Item.Id</td>
+                    <td class="mdl-data-table__cell--non-numeric">@itemContainer.Item.Name</td>
+                    <td class="mdl-data-table__cell--non-numeric">
+                        <button class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored">
+                            <i class="material-icons">add</i>
+                        </button>
+                    </td>
+                    <td class="mdl-data-table__cell--non-numeric">
+                        <button class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored">
+                            <i class="material-icons">add</i>
+                        </button>
+                    </td>
+                    <td class="mdl-data-table__cell--non-numeric">
+                        <button class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored">
+                            <i class="material-icons">add</i>
+                        </button>
+                    </td>
+                    <td class="mdl-data-table__cell--non-numeric text--center">
+                        <button class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored">
+                            <i class="material-icons">add</i>
+                        </button>
+                    </td>
+                    <td class="mdl-data-table__cell--non-numeric text--center">
+                        <button class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored">
+                            <i class="material-icons">add</i>
+                        </button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

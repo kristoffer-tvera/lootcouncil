@@ -4,6 +4,144 @@
     ViewData["Title"] = "My Guild";
 }
 
-<p>Guild members</p>
-<p>Activity feed</p>
-<p>Councils</p>
+<ul>
+    @foreach (var council in Model.Councils)
+    {
+        <li>
+            <p>
+                Council @council.Id for @council.InstanceId <!-- FAB button with ripple -->
+                <a class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect" asp-page="/Council/Index" asp-route-id="@council.Id">
+                    <i class="material-icons">add</i>
+                </a>
+            </p>
+        </li>
+    }
+</ul>
+
+<ul class="demo-list-icon mdl-list">
+    @foreach (var activity in Model.GuildActivities.Activities)
+    {
+        <li class="mdl-list__item">
+            <span class="mdl-list__item-primary-content">
+                @if (string.Equals(activity.ActivityType.Type, "CHARACTER_ACHIEVEMENT"))
+                {
+                    <i class="material-icons mdl-list__item-icon">person</i>
+                    @($"{activity.CharacterAchievement.Character.Name} -- {activity.CharacterAchievement.Achievement.Name}")
+                }
+
+                @if (string.Equals(activity.ActivityType.Type, "ENCOUNTER"))
+                {
+                    <i class="material-icons mdl-list__item-icon">person</i>
+                    @($"{activity.EncounterCompleted.Encounter.Name} -- {activity.EncounterCompleted.Mode.Name}")
+                }
+
+            </span>
+        </li>
+    }
+</ul>
+
+<table class="mdl-data-table mdl-js-data-table w--100">
+    <thead>
+        <tr>
+            <th class="">Rank</th>
+            <th class="mdl-data-table__cell--non-numeric">Name</th>
+            <th class="mdl-data-table__cell--non-numeric">Race</th>
+            <th class="mdl-data-table__cell--non-numeric">Class</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var guildMember in Model.Guild.Members.OrderBy(c => c.Rank))
+        {
+            <tr data-rank="@guildMember.Rank">
+                <td class="">@guildMember.Rank</td>
+                <td class="mdl-data-table__cell--non-numeric">@guildMember.Character.Name</td>
+                <td class="mdl-data-table__cell--non-numeric">@GetRaceFromId(guildMember.Character.PlayableRace.Id)</td>
+                <td class="mdl-data-table__cell--non-numeric">@GetClassFromId(guildMember.Character.PlayableClass.Id)</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@functions{
+    string GetRaceFromId(int id)
+    {
+        switch (id)
+        {
+            case 1:
+                return "Human";
+            case 2:
+                return "Orc";
+            case 3:
+                return "Dwarf";
+            case 4:
+                return "Night Elf";
+            case 5:
+                return "Undead";
+            case 6:
+                return "Tauren";
+            case 7:
+                return "Gnome";
+            case 8:
+                return "Troll";
+            case 9:
+                return "Goblin";
+            case 10:
+                return "Blood Elf";
+            case 11:
+                return "Draenei";
+            case 24:
+            case 25:
+            case 26:
+                return "Pandaren";
+            case 27:
+                return "Nightborne";
+            case 28:
+                return "Highmountain Tauren";
+            case 31:
+                return "Zandalari Troll";
+            case 32:
+                return "Kul Tiran";
+            case 35:
+                return "Vulpera";
+            case 36:
+                return "Maghar Orc";
+            case 37:
+                return "Mechagnome";
+            default:
+                return id.ToString();
+        }
+    }
+
+    string GetClassFromId(int id)
+    {
+        switch (id)
+        {
+            case 1:
+                return "Warrior";
+            case 2:
+                return "Paladin";
+            case 3:
+                return "Hunter";
+            case 4:
+                return "Rogue";
+            case 5:
+                return "Priest";
+            case 6:
+                return "Death Knight";
+            case 7:
+                return "Shaman";
+            case 8:
+                return "Mage";
+            case 9:
+                return "Warlock";
+            case 10:
+                return "Monk";
+            case 11:
+                return "Druid";
+            case 12:
+                return "Demon Hunter";
+            default:
+                return id.ToString();
+        }
+    }
+}
