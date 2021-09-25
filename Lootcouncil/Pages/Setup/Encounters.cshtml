@@ -4,7 +4,17 @@
     ViewData["Title"] = "Encounters";
 }
 
-<ul class="demo-list-item mdl-list">
+<h1>
+    <!-- Colored FAB button with ripple -->
+    <a class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored" asp-area="" asp-page="/Setup/Instance" asp-route-id="@Model.Instance.Expansion.Id">
+        <i class="material-icons">arrow_back</i>
+    </a>
+    @Model.Instance.Name
+</h1>
+
+<p>@Model.Instance.Description</p>
+
+<ul class="mdl-list">
     @foreach (var encounter in Model.Instance.Encounters)
     {
         <li class="mdl-list__item">
@@ -14,3 +24,5 @@
         </li>
     }
 </ul>
+
+<p>Click <a asp-page="/Council/New" asp-route-instance="@Model.Instance.Id">here</a> to create a loot-council for this instance</p>

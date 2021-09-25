@@ -11,7 +11,7 @@ namespace Lootcouncil.Models.Shared
         public ActivityType ActivityType { get; set; }
 
         [JsonPropertyName("timestamp")]
-        public int Timestamp { get; set; }
+        public long Timestamp { get; set; }
 
         [JsonPropertyName("encounter_completed")]
         public EncounterCompleted EncounterCompleted { get; set; }

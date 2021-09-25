@@ -1,16 +1,40 @@
 ﻿@page
+@using Lootcouncil.Models.Shared;
 @model Lootcouncil.Pages.Setup.EncounterModel
 @{
     ViewData["Title"] = "Encounter";
 }
 
-<ul class="demo-list-item mdl-list">
+<h1>
+    <!-- Colored FAB button with ripple -->
+    <a class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored" asp-area="" asp-page="/Setup/Encounters" asp-route-id="@Model.Encounter.Instance.Id">
+        <i class="material-icons">arrow_back</i>
+    </a>
+    @Model.Encounter.Name
+</h1>
+
+<p>@Model.Encounter.Description</p>
+
+<ul class="mdl-list">
     @foreach (var itemContainer in Model.Encounter.Items)
     {
         <li class="mdl-list__item">
             <span class="mdl-list__item-primary-content">
-                @itemContainer.Item.Name
+                @{
+                    RenderItem(itemContainer);
+                }
             </span>
         </li>
     }
 </ul>
+
+@{
+    void RenderItem(ItemContainer itemContainer)
+    {
+        var item = itemContainer.Item;
+        var name = item.Name;
+        var id = item.Id;
+        var link = "https://www.wowhead.com/item?=" + id;
+        <a href="@link" data-wowhead="item=@id" target="_blank">[@name]</a>
+    }
+}

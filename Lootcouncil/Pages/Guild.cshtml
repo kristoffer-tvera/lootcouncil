@@ -18,49 +18,58 @@
     }
 </ul>
 
-<ul class="demo-list-icon mdl-list">
-    @foreach (var activity in Model.GuildActivities.Activities)
-    {
-        <li class="mdl-list__item">
-            <span class="mdl-list__item-primary-content">
-                @if (string.Equals(activity.ActivityType.Type, "CHARACTER_ACHIEVEMENT"))
+<div class="mdl-grid">
+    <div class="mdl-cell mdl-cell--6-col">
+        <h2>Roster</h2>
+        <table class="mdl-data-table mdl-js-data-table w--100">
+            <thead>
+                <tr>
+                    <th class="">Rank</th>
+                    <th class="mdl-data-table__cell--non-numeric">Name</th>
+                    <th class="mdl-data-table__cell--non-numeric">Race</th>
+                    <th class="mdl-data-table__cell--non-numeric">Class</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var guildMember in Model.Guild.Members.OrderBy(c => c.Rank))
                 {
-                    <i class="material-icons mdl-list__item-icon">person</i>
-                    @($"{activity.CharacterAchievement.Character.Name} -- {activity.CharacterAchievement.Achievement.Name}")
+                    <tr data-rank="@guildMember.Rank">
+                        <td class="">@guildMember.Rank</td>
+                        <td class="mdl-data-table__cell--non-numeric">@guildMember.Character.Name</td>
+                        <td class="mdl-data-table__cell--non-numeric">@GetRaceFromId(guildMember.Character.PlayableRace.Id)</td>
+                        <td class="mdl-data-table__cell--non-numeric">@GetClassFromId(guildMember.Character.PlayableClass.Id)</td>
+                    </tr>
                 }
+            </tbody>
+        </table>
+    </div>
+    <div class="mdl-cell mdl-cell--6-col">
+        <h2>Activities</h2>
+        <ul class="demo-list-icon mdl-list">
+            @foreach (var activity in Model.GuildActivities.Activities)
+            {
+                <li class="mdl-list__item">
+                    <span class="mdl-list__item-primary-content">
+                        @if (string.Equals(activity.ActivityType.Type, "CHARACTER_ACHIEVEMENT"))
+                        {
+                            <i class="material-icons mdl-list__item-icon">person</i>
 
-                @if (string.Equals(activity.ActivityType.Type, "ENCOUNTER"))
-                {
-                    <i class="material-icons mdl-list__item-icon">person</i>
-                    @($"{activity.EncounterCompleted.Encounter.Name} -- {activity.EncounterCompleted.Mode.Name}")
-                }
+                            RenderAchievement(activity);
+                        }
 
-            </span>
-        </li>
-    }
-</ul>
+                        @if (string.Equals(activity.ActivityType.Type, "ENCOUNTER"))
+                        {
+                            <i class="material-icons mdl-list__item-icon">home</i>
+                            @($"{activity.EncounterCompleted.Encounter.Name} ({activity.EncounterCompleted.Mode.Name}) defeated.")
+                        }
 
-<table class="mdl-data-table mdl-js-data-table w--100">
-    <thead>
-        <tr>
-            <th class="">Rank</th>
-            <th class="mdl-data-table__cell--non-numeric">Name</th>
-            <th class="mdl-data-table__cell--non-numeric">Race</th>
-            <th class="mdl-data-table__cell--non-numeric">Class</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var guildMember in Model.Guild.Members.OrderBy(c => c.Rank))
-        {
-            <tr data-rank="@guildMember.Rank">
-                <td class="">@guildMember.Rank</td>
-                <td class="mdl-data-table__cell--non-numeric">@guildMember.Character.Name</td>
-                <td class="mdl-data-table__cell--non-numeric">@GetRaceFromId(guildMember.Character.PlayableRace.Id)</td>
-                <td class="mdl-data-table__cell--non-numeric">@GetClassFromId(guildMember.Character.PlayableClass.Id)</td>
-            </tr>
-        }
-    </tbody>
-</table>
+                    </span>
+                </li>
+            }
+        </ul>
+    </div>
+</div>
+
 
 @functions{
     string GetRaceFromId(int id)
@@ -143,5 +152,19 @@
             default:
                 return id.ToString();
         }
+    }
+}
+
+@{ 
+    void RenderAchievement(Models.Shared.Activity activity)
+    {
+        var achievement = activity.CharacterAchievement.Achievement.Name;
+        var name = activity.CharacterAchievement.Character.Name;
+        var id = activity.CharacterAchievement.Achievement.Id;
+        var timestamp = activity.Timestamp;
+        var link = "https://www.wowhead.com/achievement=" + id;
+    <span>
+        @name earned <a href="@link" data-wowhead="achievement=@id&amp;who=@name&amp;when=@timestamp" target="_blank">[@achievement]</a>.
+    </span>
     }
 }

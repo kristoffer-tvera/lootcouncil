@@ -12,7 +12,22 @@
 }
 else
 {
-    <p>Pick a raid</p>
-    <p>Pick players</p>
-    <p>Open council 69 <a asp-area="" asp-page="/Council/Index" asp-route-id="69">here</a></p>
+    if (Model.Councils != null)
+    {
+        <h1>Councils you are part of</h1>
+        <div class="demo-list-action mdl-list">
+            @foreach (var council in Model.Councils)
+            {
+                <div class="mdl-list__item">
+                    <span class="mdl-list__item-primary-content">
+                        <i class="material-icons mdl-list__item-avatar">person</i>
+                        <span>Council @council.Id</span>
+                    </span>
+                    <a class="mdl-list__item-secondary-action" asp-area="" asp-page="/Council/Index" asp-route-id="@council.Id"><i class="material-icons">star</i></a>
+                </div>
+            }
+        </div>
+    }
+
+    <p>Create a new council? <a asp-area="" asp-page="/Council/New">Click here</a>.</p>
 }

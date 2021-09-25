@@ -18,7 +18,7 @@ namespace Lootcouncil.Pages
 
         public GuildRosterResponse Guild { get; set; }
         public GuildActivitiesResponse GuildActivities { get; set; }
-        public IEnumerable<Models.Council> Councils { get; set; }
+        public IEnumerable<Models.Db.Council> Councils { get; set; }
 
         public GuildModel(ILogger<GuildModel> logger, IMemoryCache cache, IApiRepository api, IDbRepository db)
         {

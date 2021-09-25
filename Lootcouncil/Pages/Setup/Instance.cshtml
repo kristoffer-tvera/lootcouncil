@@ -4,7 +4,15 @@
     ViewData["Title"] = "Instance";
 }
 
-<ul class="demo-list-item mdl-list">
+<h1>
+    <!-- Colored FAB button with ripple -->
+    <a class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored" asp-area="" asp-page="/Setup/Expansion">
+        <i class="material-icons">arrow_back</i>
+    </a>
+    @Model.Instances.Name
+</h1>
+
+<ul class="mdl-list">
     <li class="mdl-list__item">
         <h2>Dungeons</h2>
     </li>
@@ -28,3 +36,4 @@
         </li>
     }
 </ul>
+
