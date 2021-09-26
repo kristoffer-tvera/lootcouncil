@@ -19,6 +19,10 @@ namespace Lootcouncil.Pages.Council
         public JournalInstanceResponse Instance { get; set; }
         public List<Models.Shared.Member> Members { get; set; }
         public int DefaultMemberRankIncluded { get; set; } = 3;
+        public int MaxRank { get; set; }
+
+        [BindProperty]
+        public int[] CharacterId { get; set; } = new int[0];
 
         public NewModel(ILogger<NewModel> logger, IApiRepository api)
         {
@@ -41,10 +45,12 @@ namespace Lootcouncil.Pages.Council
             var guild = await _api.GetGuildResponse(character.Guild.Key.Href, region);
 
             var roster = await _api.GetGuildRosterResponse(guild.Roster.Href, region);
+            MaxRank = roster.Members.Max(m => m.Rank);
+
             Members = roster.Members;
         }
 
-        public async Task<IActionResult> OnPostAsync(int instance, List<int> characters)
+        public async Task<IActionResult> OnPostAsync(int instance, int[] CharacterId)
         {
             var pepe = await Task.FromResult(true);
             return RedirectToPage("/Council/1");

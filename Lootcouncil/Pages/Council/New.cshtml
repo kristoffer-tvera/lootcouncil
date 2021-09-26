@@ -28,34 +28,61 @@
 {
     <hr />
 
-    <p>Pick members. Use the slider below to automatically pick groups of members based on guild-rank.</p>
-
+    <p>Pick members from the list below. You can also use the slider below to automatically pick groups of members based on guild-rank. Current filter: <span data-rank-current>@Model.DefaultMemberRankIncluded</span></p>
     <p>
-        <input class="mdl-slider mdl-js-slider" type="range" min="0" max="10" value="@Model.DefaultMemberRankIncluded" step="1" tabindex="0" data-rank-slider>
+        <input class="mdl-slider mdl-js-slider" type="range" min="0" max="@Model.MaxRank" value="@Model.DefaultMemberRankIncluded" step="1" tabindex="0" data-rank-slider>
     </p>
-    <p>Current filter: <span data-rank-current>@Model.DefaultMemberRankIncluded</span></p>
-    <ul class="demo-list-control mdl-list">
-        @foreach (var member in Model.Members.OrderBy(m => m.Rank))
-        {
-            <li class="mdl-list__item">
-                <span class="mdl-list__item-primary-content">
-                    <i class="material-icons  mdl-list__item-avatar">person</i>
-                    @member.Character.Name (@member.Rank)
-                </span>
-                <span class="mdl-list__item-secondary-action">
-                    <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="character-@(member.Character.Id)">
-                        <input type="checkbox" id="character-@(member.Character.Id)" class="mdl-checkbox__input" data-rank="member.Rank" @(member.Rank >= Model.DefaultMemberRankIncluded ? "" : "checked") />
-                    </label>
-                </span>
-            </li>
-        }
-    </ul>
+    <form method="post">
+        <button type="submit">Confirm Selection</button>
+        <input type="hidden" name="instance" value="123"/>
+        <ul class="demo-list-control mdl-list">
+            @foreach (var member in Model.Members.OrderBy(m => m.Rank))
+            {
+                <li class="mdl-list__item">
+                    <span class="mdl-list__item-primary-content">
+                        <i class="material-icons  mdl-list__item-avatar">person</i>
+                        @member.Character.Name (@member.Rank)
+                    </span>
+                    <span class="mdl-list__item-secondary-action">
+                        <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="character-@(member.Character.Id)" data-rank="@member.Rank">
+                            <input type="checkbox" name="CharacterId" value="@member.Character.Id" id="character-@(member.Character.Id)" class="mdl-checkbox__input" @(member.Rank >= Model.DefaultMemberRankIncluded ? "" : "checked") />
+                        </label>
+                    </span>
+                </li>
+            }
+        </ul>
+    </form>
 }
 
 <script>
-    var slider = document.querySelector('[data-rank-slider]');
+    let slider = document.querySelector('[data-rank-slider]');
     if (slider) {
-        slider.addEventListener('change', function (e) { console.log('x') });
+        slider.addEventListener('change', function (e) {
+            let element = e.srcElement;
+
+            let rank = Number.parseInt(element.value) || 0;
+
+            let currentRankDisplay = document.querySelector('[data-rank-current]');
+            if (currentRankDisplay) {
+                currentRankDisplay.innerText = rank;
+            }
+
+            let guildMembers = document.querySelectorAll('[data-rank]');
+            if (guildMembers && guildMembers.length > 0) {
+                for (const member of guildMembers) {
+                    //console.log(member);
+                    let memberRank = member.getAttribute('data-rank');
+                    memberRank = Number.parseInt(memberRank);
+                    if (memberRank >= rank) {
+                        member.MaterialCheckbox.uncheck();
+                    } else {
+                        member.MaterialCheckbox.check();
+                    }
+                }
+
+
+            }
+        });
         // read slider value, queryselectorall on value
     }
 </script>
