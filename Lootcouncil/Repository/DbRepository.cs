@@ -15,9 +15,9 @@ namespace Lootcouncil.Repository
             return await Task.FromResult(councils);
         }
 
-        public async Task<IEnumerable<Council>> GetCouncilsForCharacter(int characterId)
+        public async Task<IEnumerable<Council>> GetCouncilsForCharacter(string name, string realm)
         {
-            var councilMemberships = GetCouncilMembers().Where(cm => cm.CharacterID == characterId);
+            var councilMemberships = GetCouncilMembers().Where(cm => cm.Name == name && cm.Realm == realm);
             var councils = GetCouncils().Where(c => councilMemberships.Any(cm => cm.CouncilId == c.Id));
 
 
@@ -30,6 +30,30 @@ namespace Lootcouncil.Repository
             var councils = GetCouncils().First(c => c.Id == id);
 
             return await Task.FromResult(councils);
+        }
+
+        public async Task<Council> CreateNewCouncil(int guildId, int instanceId)
+        {
+            var councils = GetCouncils().First();
+
+            return await Task.FromResult(councils);
+        }
+
+
+        public async Task AddCouncilMembers(IEnumerable<CouncilMember> members)
+        {
+            return;
+        }
+
+        public async Task RemoveCouncilMember(CouncilMember member)
+        {
+            return;
+        }
+
+        public async Task<IEnumerable<CouncilMember>> GetCouncilMembers(int councilId)
+        {
+            var members = GetCouncilMembers();
+            return members.Where(m => m.CouncilId == councilId);
         }
 
         private IEnumerable<Council> GetCouncils()
@@ -46,13 +70,16 @@ namespace Lootcouncil.Repository
         private IEnumerable<CouncilMember> GetCouncilMembers()
         {
             var members = new List<CouncilMember>() {
-                new CouncilMember { CouncilId = 1, CharacterID = 157481447},
-                new CouncilMember { CouncilId = 2, CharacterID = 157481447},
-                new CouncilMember { CouncilId = 2, CharacterID = 1},
-                new CouncilMember { CouncilId = 2, CharacterID = 2}
+                new CouncilMember { CouncilId = 1, Name = "Bsl", Realm = "stormscale"},
+                new CouncilMember { CouncilId = 1, Name = "Yukela", Realm = "stormscale"},
+                new CouncilMember { CouncilId = 2, Name = "Bsl", Realm = "stormscale"},
+                new CouncilMember { CouncilId = 2, Name = "Jsj", Realm = "stormscale"},
+                new CouncilMember { CouncilId = 2, Name = "Ibb", Realm = "stormscale"}
             };
 
             return members;
         }
+
+        
     }
 }

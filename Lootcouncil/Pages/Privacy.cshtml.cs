@@ -18,7 +18,7 @@ namespace Lootcouncil.Pages
             _api = api;
         }
 
-        public async Task OnGetAsync()
+        public void OnGet()
         {
         }
     }

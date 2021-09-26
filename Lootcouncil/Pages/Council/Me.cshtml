@@ -1,75 +1,103 @@
-﻿@page "{id:int}"
+﻿@page "{Id:int}"
+@using Lootcouncil.Models.Shared
 @model Lootcouncil.Pages.Council.MeModel
 @{
     ViewData["Title"] = "Council";
 }
 
-<h1>Currently showing council @(Model.Id)</h1>
 
-<p>See list of all items in council</p>
-<p>Select BiS / BiS from Raid / Major / Minor / OS for items</p>
-
-<ul>
-
-    @foreach (var encounter in Model.Instance.Encounters)
-    {
-        <li>
-            <h2>@encounter.Name</h2>
-
-        </li>
-    }
-</ul>
+<h1>
+    <!-- Colored FAB button with ripple -->
+    <a class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored" asp-area="" asp-page="/Council/Me">
+        <i class="material-icons">arrow_back</i>
+    </a>
+    Currently showing council @(Model.Id)
+</h1>
 
 
 @foreach (var encounter in Model.Instance.Encounters)
 {
     var currentEncounter = Model.Encounters.FirstOrDefault(e => e.Id == encounter.Id);
-    <h2>@encounter.Name</h2>
-    <table class="mdl-data-table mdl-js-data-table w--100">
-        <thead>
-            <tr>
-                <th class="mdl-data-table__cell--non-numeric">Id</th>
-                <th class="mdl-data-table__cell--non-numeric">Name</th>
-                <th class="mdl-data-table__cell--non-numeric">BiS</th>
-                <th class="mdl-data-table__cell--non-numeric">Major</th>
-                <th class="mdl-data-table__cell--non-numeric">Minor</th>
-                <th class="mdl-data-table__cell--non-numeric">Os/Xmog</th>
-                <th class="mdl-data-table__cell--non-numeric">Pass</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var itemContainer in currentEncounter.Items)
-            {
+    <form class="">
+        <h2>@encounter.Name</h2>
+        <button type="button" onclick="UpdateBoss(this)">Update</button>
+        <table class="mdl-data-table mdl-js-data-table w--100">
+            <thead>
                 <tr>
-                    <td class="mdl-data-table__cell--non-numeric">@itemContainer.Item.Id</td>
-                    <td class="mdl-data-table__cell--non-numeric">@itemContainer.Item.Name</td>
-                    <td class="mdl-data-table__cell--non-numeric">
-                        <button class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored">
-                            <i class="material-icons">add</i>
-                        </button>
-                    </td>
-                    <td class="mdl-data-table__cell--non-numeric">
-                        <button class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored">
-                            <i class="material-icons">add</i>
-                        </button>
-                    </td>
-                    <td class="mdl-data-table__cell--non-numeric">
-                        <button class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored">
-                            <i class="material-icons">add</i>
-                        </button>
-                    </td>
-                    <td class="mdl-data-table__cell--non-numeric text--center">
-                        <button class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored">
-                            <i class="material-icons">add</i>
-                        </button>
-                    </td>
-                    <td class="mdl-data-table__cell--non-numeric text--center">
-                        <button class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored">
-                            <i class="material-icons">add</i>
-                        </button>
-                    </td>
+                    <th class="mdl-data-table__cell--non-numeric">Id</th>
+                    <th class="mdl-data-table__cell--non-numeric">Name</th>
+                    <th class="mdl-data-table__cell--non-numeric">BiS</th>
+                    <th class="mdl-data-table__cell--non-numeric">Major</th>
+                    <th class="mdl-data-table__cell--non-numeric">Minor</th>
+                    <th class="mdl-data-table__cell--non-numeric">Os/Xmog</th>
+                    <th class="mdl-data-table__cell--non-numeric">Pass</th>
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @foreach (var itemContainer in currentEncounter.Items)
+                {
+                    var item = itemContainer.Item;
+                    <tr>
+                        <td class="mdl-data-table__cell--non-numeric">@itemContainer.Item.Id</td>
+                        <td class="mdl-data-table__cell--non-numeric">@{ RenderItem(itemContainer); }</td>
+                        <td class="mdl-data-table__cell--non-numeric">
+                            <label class="mdl-radio mdl-js-radio mdl-js-ripple-effect" for="radio-@item.Id-@Constants.Loot.BiS">
+                                <input type="radio" id="radio-@item.Id-@Constants.Loot.BiS" class="mdl-radio__button" name="votes[@item.Id]" value="@Constants.Loot.BiS">
+                                <span class="mdl-radio__label"></span>
+                            </label>
+                        </td>
+                        <td class="mdl-data-table__cell--non-numeric">
+                            <label class="mdl-radio mdl-js-radio mdl-js-ripple-effect" for="radio-@item.Id-@Constants.Loot.Major">
+                                <input type="radio" id="radio-@item.Id-@Constants.Loot.Major" class="mdl-radio__button" name="votes[@item.Id]" value="@Constants.Loot.Major">
+                                <span class="mdl-radio__label"></span>
+                            </label>
+                        </td>
+                        <td class="mdl-data-table__cell--non-numeric">
+                            <label class="mdl-radio mdl-js-radio mdl-js-ripple-effect" for="radio-@item.Id-@Constants.Loot.Minor">
+                                <input type="radio" id="radio-@item.Id-@Constants.Loot.Minor" class="mdl-radio__button" name="votes[@item.Id]" value="@Constants.Loot.Minor">
+                                <span class="mdl-radio__label"></span>
+                            </label>
+                        </td>
+                        <td class="mdl-data-table__cell--non-numeric">
+                            <label class="mdl-radio mdl-js-radio mdl-js-ripple-effect" for="radio-@item.Id-@Constants.Loot.XmogOs">
+                                <input type="radio" id="radio-@item.Id-@Constants.Loot.XmogOs" class="mdl-radio__button" name="votes[@item.Id]" value="@Constants.Loot.XmogOs">
+                                <span class="mdl-radio__label"></span>
+                            </label>
+                        </td>
+                        <td class="mdl-data-table__cell--non-numeric">
+                            <label class="mdl-radio mdl-js-radio mdl-js-ripple-effect" for="radio-@item.Id-@Constants.Loot.Pass">
+                                <input type="radio" id="radio-@item.Id-@Constants.Loot.Pass" class="mdl-radio__button" name="votes[@item.Id]" value="@Constants.Loot.Pass" checked>
+                                <span class="mdl-radio__label"></span>
+                            </label>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </form>
+}
+
+
+<script>
+    function UpdateBoss(sender){
+        let form = sender.closest('form');
+        let formData = new FormData(form);
+        const data = new URLSearchParams(new FormData(form));
+
+        fetch("./@Model.Id", {
+            body: data,
+            method: "post"
+        });
+    }
+</script>
+
+@{
+    void RenderItem(ItemContainer itemContainer)
+    {
+        var item = itemContainer.Item;
+        var name = item.Name;
+        var id = item.Id;
+        var link = "https://www.wowhead.com/item?=" + id;
+        <a href="@link" data-wowhead="item=@id" target="_blank">[@name]</a>
+    }
 }

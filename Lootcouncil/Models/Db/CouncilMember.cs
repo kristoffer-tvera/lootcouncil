@@ -8,6 +8,7 @@ namespace Lootcouncil.Models.Db
     public class CouncilMember
     {
         public int CouncilId { get; set; }
-        public int CharacterID { get; set; }
+        public string Name { get; set; }
+        public string Realm { get; set; }
     }
 }

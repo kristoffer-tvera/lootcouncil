@@ -7,6 +7,21 @@ namespace Lootcouncil
         public static IEnumerable<string> Regions = new List<string>() { "EU", "US", "KR", "TW" };
         public static IEnumerable<string> Locales = new List<string>() { "en_GB", "en_US", "ko_KR", "zh_TW" };
 
+        public static int LootPass = 0;
+        public static int LootXmogOs = 1;
+        public static int LootMinor = 2;
+        public static int LootMajor = 3;
+        public static int LootBis = 4;
+
+        public enum Loot
+        {
+            Pass = 0,
+            XmogOs = 1,
+            Minor = 2,
+            Major = 3,
+            BiS = 4
+        }
+
         public static string CookieCharacter = "Character";
         public static string CookieRealm = "Realm";
         public static string CookieRegion = "Region";

@@ -6,11 +6,11 @@
 <ol>
     @if (Model.Instance == null)
     {
-        <li>Start by picking a instance <a asp-area="" asp-page="/Setup/Expansion">here</a>.</li>
+        <li>Start by picking a instance <a class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent" asp-area="" asp-page="/Setup/Expansion">here</a> .</li>
     }
     else
     {
-        <li><s>Start by picking a instance <a asp-area="" asp-page="/Setup/Expansion">here</a>.</s></li>
+        <li><s>Start by picking a instance <a class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent" asp-area="" asp-page="/Setup/Expansion">here</a> .</s></li>
     }
     <li>Pick the characters that are expected to be part of this council</li>
 </ol>
@@ -45,7 +45,7 @@
                     </span>
                     <span class="mdl-list__item-secondary-action">
                         <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="character-@(member.Character.Id)" data-rank="@member.Rank">
-                            <input type="checkbox" name="CharacterId" value="@member.Character.Id" id="character-@(member.Character.Id)" class="mdl-checkbox__input" @(member.Rank >= Model.DefaultMemberRankIncluded ? "" : "checked") />
+                            <input type="checkbox" name="CharacterIds" value="@member.Character.Id" id="character-@(member.Character.Id)" class="mdl-checkbox__input" @(member.Rank >= Model.DefaultMemberRankIncluded ? "" : "checked") />
                         </label>
                     </span>
                 </li>

@@ -4,11 +4,20 @@
     ViewData["Title"] = "Expansion";
 }
 
+
+<h1>
+    <!-- Colored FAB button with ripple -->
+    <a class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored" asp-area="" asp-page="/Council/New">
+        <i class="material-icons">arrow_back</i>
+    </a>
+    Pick expansion 
+</h1>
+
 <ul class="mdl-list">
     @foreach (var expansion in Model.Expansions.Tiers)
     {
         <li class="mdl-list__item">
-            <a class="mdl-list__item-primary-content" asp-area="" asp-page="/Setup/Instance" asp-route-id="@(expansion.Id)">
+            <a class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent" asp-area="" asp-page="/Setup/Instance" asp-route-id="@(expansion.Id)">
                 @expansion.Name
             </a>
         </li>
