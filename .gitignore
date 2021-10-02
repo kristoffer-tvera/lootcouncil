@@ -348,6 +348,4 @@ MigrationBackup/
 
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
-Lootcouncil/appsettings.Production.json
-Lootcouncil/appsettings.json
-Lootcouncil/appsettings.Development.json
+Lootcouncil/appsettings.*.json
