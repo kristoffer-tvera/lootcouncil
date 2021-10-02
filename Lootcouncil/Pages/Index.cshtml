@@ -11,11 +11,11 @@
         @if (!string.IsNullOrWhiteSpace(Model.CharacterName))
         {
             <p>Current main: @Model.CharacterName.</p>
-            <p>Click <a asp-area="" asp-page="/Setup/Characters">here</a> to change.</p>
+            <p>Click <a class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent" asp-area="" asp-page="/Setup/Characters">here</a> to change.</p>
         }
         else
         {
-            <p>Click <a asp-area="" asp-page="/Setup/Characters">here</a> to pick a character as your main.</p>
+            <p>Click <a class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent" asp-area="" asp-page="/Setup/Characters">here</a> to pick a character as your main.</p>
         }
     </div>
 }
@@ -23,6 +23,6 @@ else
 {
     <div class="text-center">
         <h1 class="display-4">Welcome</h1>
-        <p>Click <a asp-area="" asp-page="/Auth/Signin">here</a> to sign in (using Battle.net)</p>
+        <p>Click <a class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent" asp-area="" asp-page="/Auth/Signin">here</a> to sign in (using Battle.net)</p>
     </div>
 }

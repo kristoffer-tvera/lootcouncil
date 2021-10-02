@@ -30,11 +30,11 @@
 
     <p>Pick members from the list below. You can also use the slider below to automatically pick groups of members based on guild-rank. Current filter: <span data-rank-current>@Model.DefaultMemberRankIncluded</span></p>
     <p>
-        <input class="mdl-slider mdl-js-slider" type="range" min="0" max="@Model.MaxRank" value="@Model.DefaultMemberRankIncluded" step="1" tabindex="0" data-rank-slider>
+        <input class="mdl-slider mdl-js-slider" type="range" min="1" max="@Model.MaxRank" value="@Model.DefaultMemberRankIncluded" step="1" tabindex="0" data-rank-slider>
     </p>
     <form method="post">
-        <button type="submit">Confirm Selection</button>
-        <input type="hidden" name="instance" value="123"/>
+        <button type="submit" class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent">Confirm Selection</button>
+        <input type="hidden" name="instance" value="@(Model.Instance.Id)"/>
         <ul class="demo-list-control mdl-list">
             @foreach (var member in Model.Members.OrderBy(m => m.Rank))
             {
@@ -70,7 +70,6 @@
             let guildMembers = document.querySelectorAll('[data-rank]');
             if (guildMembers && guildMembers.length > 0) {
                 for (const member of guildMembers) {
-                    //console.log(member);
                     let memberRank = member.getAttribute('data-rank');
                     memberRank = Number.parseInt(memberRank);
                     if (memberRank >= rank) {
@@ -83,6 +82,5 @@
 
             }
         });
-        // read slider value, queryselectorall on value
     }
 </script>

@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -65,7 +64,7 @@ namespace Lootcouncil.Pages.Council
             var guild = await _api.GetGuildResponse(self.Guild.Key.Href, region);
             var roster = await _api.GetGuildRosterResponse(guild.Roster.Href, region);
 
-            var council = await _db.CreateNewCouncil(guild.Id, instance);
+            var council = await _db.CreateNewCouncil(guild.Id, guild.Name, guild.Realm.Slug, instance);
 
             var councilMembers = new List<CouncilMember>();
             foreach(var characterId in CharacterIds)

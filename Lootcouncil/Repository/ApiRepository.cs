@@ -65,7 +65,6 @@ namespace Lootcouncil.Repository
 
         public async Task<JournalInstanceResponse> GetJournalInstanceResponse(int id, string region)
         {
-
             return await ExecuteRequest<JournalInstanceResponse>(Constants.CachePolicyHardcore, $"data/wow/journal-instance/{id}", "static", region);
         }
 

@@ -1,7 +1,6 @@
 ﻿using Lootcouncil.Repository;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
-using System.Threading.Tasks;
 
 namespace Lootcouncil.Pages
 {

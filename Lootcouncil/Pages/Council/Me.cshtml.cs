@@ -1,5 +1,6 @@
 using Lootcouncil.Extensions;
 using Lootcouncil.Models;
+using Lootcouncil.Models.Db;
 using Lootcouncil.Repository;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -15,11 +16,6 @@ namespace Lootcouncil.Pages.Council
         private readonly IDbRepository _db;
         private readonly IApiRepository _api;
 
-        [BindProperty]
-        public int Id { get; set; }
-        public JournalInstanceResponse Instance { get; set; }
-        public List<JournalEncounterResponse> Encounters { get; set; }
-
         public MeModel(ILogger<MeModel> logger, IDbRepository db, IApiRepository api)
         {
             _logger = logger;
@@ -27,22 +23,58 @@ namespace Lootcouncil.Pages.Council
             _api = api;
         }
 
-        public async Task OnGetAsync(int Id)
+        [BindProperty(SupportsGet = true)]
+        public int CouncilId { get; set; }
+        [BindProperty(SupportsGet = true)]
+        public int EncounterId { get; set; }
+
+        public JournalInstanceResponse Instance { get; set; }
+        public JournalEncounterResponse Encounter { get; set; }
+        public IEnumerable<Entry> Entries { get; set; }
+        
+
+        public async Task OnGetAsync()
         {
             var region = Request.Cookies.GetRegion();
-            var council = await _db.GetCouncil(Id);
+            var council = await _db.GetCouncil(CouncilId);
+            var character = HttpContext.Session.Get<CharacterResponse>(nameof(CharacterResponse));
 
+            Entries = await _db.GetEntriesForCharacter(council.Id, character.Name, character.Realm.Slug);
             Instance = await _api.GetJournalInstanceResponse(council.InstanceId, region);
-            Encounters = new List<JournalEncounterResponse>();
-            foreach(var encounter in Instance.Encounters)
-            {
-                Encounters.Add(await _api.GetJournalEncounterResponse(encounter.Id, region));
-            }
+            Encounter = await _api.GetJournalEncounterResponse(EncounterId, region);
+
         }
 
-        public async Task<IActionResult> OnPostAsync(int Id, [FromBody]Dictionary<int, int> votes)
+        public async Task<IActionResult> OnPostAsync()
         {
-            return RedirectToPage("/Council/Me", new { Id });
+            var form = await Request.ReadFormAsync();
+            var character = HttpContext.Session.Get<CharacterResponse>(nameof(CharacterResponse));
+
+            var entries = new List<Entry>();
+            foreach (var entry in form)
+            {
+                if(int.TryParse(entry.Key, out var key) && int.TryParse(entry.Value, out var value))
+                {
+                    if(value == default)
+                    {
+                        continue;
+                    }
+
+                    entries.Add(new Entry
+                    {
+                        CouncilId = CouncilId,
+                        ItemId = key,
+                        Option = value,
+                        EncounterId = EncounterId,
+                        Name = character.Name,
+                        Realm = character.Realm.Slug
+                    });
+                }
+                
+            }
+            await _db.SaveEntries(entries);
+            return RedirectToPage("/Council/Index", new { id = CouncilId });
         }
     }
+
 }

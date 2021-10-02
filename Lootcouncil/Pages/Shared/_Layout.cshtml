@@ -14,7 +14,7 @@
         <header class="mdl-layout__header">
             <div class="mdl-layout__header-row">
                 <!-- Title -->
-                <a asp-area="" asp-page="/Index"><span class="mdl-layout-title">Lootcouncil</span></a>
+                <a asp-area="" asp-page="/Index"><span class="material-icons">home</span></a>
                 <!-- Add spacer, to align navigation to the right -->
                 <div class="mdl-layout-spacer"></div>
                 <!-- Navigation. We hide it in small screens. -->
@@ -23,7 +23,7 @@
                     @if (User.Identity.IsAuthenticated)
                     {
                         <a class="mdl-navigation__link" asp-area="" asp-page="/Guild">My Guild</a>
-                        <a class="mdl-navigation__link" asp-area="" asp-page="/Council/Index">Council</a>
+                        <a class="mdl-navigation__link" asp-area="" asp-page="/Council/Index" asp-route-id="-1">Council</a>
                         <a class="mdl-navigation__link" href="#" id="account-button">@(User.GetBattleTag())</a>
                     }
                 </nav>

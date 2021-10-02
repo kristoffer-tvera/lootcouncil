@@ -4,23 +4,34 @@
     ViewData["Title"] = "My Guild";
 }
 
-<ul>
-    @foreach (var council in Model.Councils)
-    {
-        <li>
-            <p>
-                Council @council.Id for @council.InstanceId <!-- FAB button with ripple -->
-                <a class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect" asp-page="/Council/Index" asp-route-id="@council.Id">
-                    <i class="material-icons">add</i>
-                </a>
-            </p>
-        </li>
-    }
-</ul>
+<h1>@Model.Guild.Guild.Name</h1>
 
-<div class="mdl-grid">
-    <div class="mdl-cell mdl-cell--6-col">
-        <h2>Roster</h2>
+
+
+<div class="mdl-tabs mdl-js-tabs mdl-js-ripple-effect">
+    <div class="mdl-tabs__tab-bar">
+        <a href="#councils-panel" class="mdl-tabs__tab is-active">Councils</a>
+        <a href="#members-panel" class="mdl-tabs__tab">Members (@(Model.Guild.Members.Count))</a>
+        <a href="#activities-panel" class="mdl-tabs__tab">Activities</a>
+    </div>
+
+    <div class="mdl-tabs__panel is-active" id="councils-panel">
+        <ul class="mdl-list">
+            @foreach (var council in Model.Councils)
+            {
+                <li class="mdl-list__item">
+                    <a class="mdl-list__item-primary-content" asp-area="" asp-page="/Council/Index" asp-route-id="@council.Id">
+                        <span class="mdl-list__item-primary-content">
+                            <i class="material-icons mdl-list__item-avatar">info</i>
+                            <span>@council.Instance.Name (@council.GuildName)</span>
+                        </span>
+                    </a>
+                </li>
+
+            }
+        </ul>
+    </div>
+    <div class="mdl-tabs__panel" id="members-panel">
         <table class="mdl-data-table mdl-js-data-table w--100">
             <thead>
                 <tr>
@@ -43,9 +54,8 @@
             </tbody>
         </table>
     </div>
-    <div class="mdl-cell mdl-cell--6-col">
-        <h2>Activities</h2>
-        <ul class="demo-list-icon mdl-list">
+    <div class="mdl-tabs__panel" id="activities-panel">
+        <ul class="mdl-list">
             @foreach (var activity in Model.GuildActivities.Activities)
             {
                 <li class="mdl-list__item">
@@ -69,7 +79,6 @@
         </ul>
     </div>
 </div>
-
 
 @functions{
     string GetRaceFromId(int id)
@@ -155,7 +164,7 @@
     }
 }
 
-@{ 
+@{
     void RenderAchievement(Models.Shared.Activity activity)
     {
         var achievement = activity.CharacterAchievement.Achievement.Name;
@@ -163,8 +172,8 @@
         var id = activity.CharacterAchievement.Achievement.Id;
         var timestamp = activity.Timestamp;
         var link = "https://www.wowhead.com/achievement=" + id;
-    <span>
-        @name earned <a href="@link" data-wowhead="achievement=@id&amp;who=@name&amp;when=@timestamp" target="_blank">[@achievement]</a>.
-    </span>
+        <span>
+            @name earned <a href="@link" data-wowhead="achievement=@id&amp;who=@name&amp;when=@timestamp" target="_blank">[@achievement]</a>.
+        </span>
     }
 }

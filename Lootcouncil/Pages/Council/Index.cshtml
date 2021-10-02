@@ -4,31 +4,132 @@
     ViewData["Title"] = "Council";
 }
 
+@section styles{
+    <style>
+        div.mdl-list__item + div.mdl-list__item {
+            border-top: 2px solid black;
+        }
+
+        .mdl-badge {
+            padding: 5px;
+            color: #000;
+            margin-left: 1rem;
+        }
+    </style>
+}
+
 @if (Model.CurrentCouncil != null)
 {
-    <p>See all encounters for raid</p>
-    <p>See all loot from all encounters</p>
-    <p>Update my choices <a class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent" asp-area="" asp-page="/Council/Me" asp-route-id="@Model.CurrentCouncil.Id">here</a></p>
+    <h1>
+        <!-- Colored FAB button with ripple -->
+        <a class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored" asp-area="" asp-page="/Council/Index" asp-route-id="-1">
+            <i class="material-icons">arrow_back</i>
+        </a>
+        @Model.Instance.Name (@Model.CurrentCouncil.GuildName)
+    </h1>
+
+    <div class="mdl-tabs mdl-js-tabs mdl-js-ripple-effect">
+        <div class="mdl-tabs__tab-bar">
+            <a href="#loot-panel" class="mdl-tabs__tab is-active">Your loot</a>
+            <a href="#prio-panel" class="mdl-tabs__tab">Loot Prio</a>
+            <a href="#members-panel" class="mdl-tabs__tab">Council Members</a>
+        </div>
+
+        <div class="mdl-tabs__panel is-active" id="loot-panel">
+            <ul class="mdl-list">
+                @foreach (var encounter in Model.Instance.Encounters)
+                {
+                    var entries = Model.Entries.Where(e => e.EncounterId == encounter.Id);
+                    <li class="mdl-list__item">
+                        <a class="mdl-list__item-primary-content" asp-area="" asp-page="/Council/Me" asp-route-CouncilId="@Model.CurrentCouncil.Id" asp-route-EncounterId="@encounter.Id">
+                            <span class="mdl-list__item-primary-content">
+                                <i class="material-icons mdl-list__item-avatar">play_circle_filled</i>
+                                <span>@encounter.Name</span>
+                                @foreach (var option in Enum.GetValues<Constants.Loot>().Reverse())
+                                {
+                                    var currentOption = (int)option;
+                                    var count = entries.Count(e => e.Option == currentOption);
+                                    if (count > 0)
+                                    {
+                                        <span class="mdl-badge" data-badge="@count">@option</span>
+                                    }
+                                }
+                            </span>
+                        </a>
+                    </li>
+                }
+            </ul>
+        </div>
+        <div class="mdl-tabs__panel" id="prio-panel">
+            <p>View priority for each boss:</p>
+            <ul class="mdl-list">
+                @foreach (var encounter in Model.Instance.Encounters)
+                {
+                    var entries = Model.Entries.Where(e => e.EncounterId == encounter.Id);
+                    <li class="mdl-list__item">
+                        <a class="mdl-list__item-primary-content" asp-area="" asp-page="/Council/Priority" asp-route-CouncilId="@Model.CurrentCouncil.Id" asp-route-EncounterId="@encounter.Id">
+                            <span class="mdl-list__item-primary-content">
+                                <i class="material-icons mdl-list__item-avatar">settings</i>
+                                <span>@encounter.Name</span>
+                            </span>
+                        </a>
+                    </li>
+                }
+            </ul>
+        </div>
+        <div class="mdl-tabs__panel" id="members-panel">
+            <p>Members of this council:</p>
+            <div class="mdl-list">
+                @foreach (var member in Model.CouncilMembers)
+                {
+                    <div class="mdl-list__item">
+                        <span class="mdl-list__item-primary-content">
+                            <i class="material-icons mdl-list__item-avatar">person</i>
+                            <span>@member.Name</span>
+                        </span>
+
+                        @if (!string.Equals(member.Name, Model.Character.Name) || !string.Equals(member.Realm, Model.Character.Realm.Slug))
+                        {
+                            <form method="post">
+                                <input type="hidden" name="councilId" value="@Model.CurrentCouncil.Id" />
+                                <input type="hidden" name="character" value="@member.Name" />
+                                <input type="hidden" name="realm" value="@member.Realm" />
+                                <!-- Colored FAB button with ripple -->
+                                <button class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored">
+                                    <i class="material-icons">delete</i>
+                                </button>
+                            </form>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
 }
 else
 {
-    if (Model.Councils != null)
+    if (Model.Councils != null && Model.Councils.Any())
     {
         <h1>Councils you are part of</h1>
         <ul class="mdl-list">
             @foreach (var council in Model.Councils)
             {
                 <li class="mdl-list__item">
-                    <a  class="mdl-list__item-primary-content" asp-area="" asp-page="/Council/Index" asp-route-id="@council.Id">
+                    <a class="mdl-list__item-primary-content" asp-area="" asp-page="/Council/Index" asp-route-id="@council.Id">
                         <span class="mdl-list__item-primary-content">
-                            <i class="material-icons mdl-list__item-avatar">person</i>
-                            <span>Council @council.Id</span>
+                            <i class="material-icons mdl-list__item-avatar">info</i>
+                            <span>@council.Instance.Name (@council.GuildName)</span>
                         </span>
                     </a>
                 </li>
 
             }
         </ul>
+    }
+    else
+    {
+        <h1>You are currently not a member in any councils</h1>
     }
 
     <p>Create a new council? Click <a class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent" asp-area="" asp-page="/Council/New">here</a> .</p>

@@ -1,4 +1,9 @@
-﻿using Lootcouncil.Models.Db;
+﻿using Dapper;
+using Dapper.Contrib.Extensions;
+using Lootcouncil.Models.Db;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,78 +13,180 @@ namespace Lootcouncil.Repository
 {
     public class DbRepository : IDbRepository
     {
+        private readonly ILogger<DbRepository> _logger;
+        private readonly MySqlConnection _connection;
+
+        public DbRepository(IConfiguration config, ILogger<DbRepository> logger)
+        {
+            var connectionString = config.GetConnectionString("Db");
+            _connection = new MySqlConnection(connectionString);
+            _logger = logger;
+        }
+
         public async Task<IEnumerable<Council>> GetCouncilsForGuild(int guildId)
         {
-            var councils = GetCouncils();
+            try
+            {
+                var councils = await _connection.QueryAsync<Council>("SELECT * FROM Council WHERE GuildId = @guildId", new { guildId });
+                return councils;
+            }
+            catch (Exception e)
+            {
+                _logger.LogWarning(e, e.Message);
+            }
 
-            return await Task.FromResult(councils);
+            return Enumerable.Empty<Council>();
         }
 
         public async Task<IEnumerable<Council>> GetCouncilsForCharacter(string name, string realm)
         {
-            var councilMemberships = GetCouncilMembers().Where(cm => cm.Name == name && cm.Realm == realm);
-            var councils = GetCouncils().Where(c => councilMemberships.Any(cm => cm.CouncilId == c.Id));
+            try
+            {
+                var councils = await _connection.QueryAsync<Council>("SELECT * FROM CouncilMember LEFT JOIN Council ON Council.Id = CouncilMember.CouncilId WHERE CouncilMember.Name = @name AND CouncilMember.Realm = @realm ", new { name, realm });
+                return councils;
+            }
+            catch (Exception e)
+            {
+                _logger.LogWarning(e, e.Message);
+            }
 
-
-
-            return await Task.FromResult(councils);
+            return Enumerable.Empty<Council>();
         }
 
         public async Task<Council> GetCouncil(int id)
         {
-            var councils = GetCouncils().First(c => c.Id == id);
+            try
+            {
+                var councils = await _connection.GetAsync<Council>(id);
+                return councils;
+            }
+            catch (Exception e)
+            {
+                _logger.LogWarning(e, e.Message);
+            }
 
-            return await Task.FromResult(councils);
+            return null;
         }
 
-        public async Task<Council> CreateNewCouncil(int guildId, int instanceId)
+        public async Task<Council> CreateNewCouncil(int guildId, string guildName, string guildRealm, int instanceId)
         {
-            var councils = GetCouncils().First();
+            var council = new Council
+            {
+                GuildId = guildId,
+                GuildName = guildName,
+                GuildRealm = guildRealm,
+                InstanceId = instanceId
+            };
 
-            return await Task.FromResult(councils);
+            await _connection.InsertAsync(council);
+
+            return council;
         }
 
 
         public async Task AddCouncilMembers(IEnumerable<CouncilMember> members)
         {
-            return;
+            await _connection.InsertAsync(members);
         }
 
         public async Task RemoveCouncilMember(CouncilMember member)
         {
-            return;
+            await _connection.DeleteAsync(member);
         }
 
         public async Task<IEnumerable<CouncilMember>> GetCouncilMembers(int councilId)
         {
-            var members = GetCouncilMembers();
-            return members.Where(m => m.CouncilId == councilId);
+            try
+            {
+                var members = await _connection.QueryAsync<CouncilMember>("SELECT * FROM CouncilMember WHERE CouncilId = @councilId ", new { councilId });
+                return members;
+            }
+            catch (Exception e)
+            {
+                _logger.LogWarning(e, e.Message);
+            }
+
+            return Enumerable.Empty<CouncilMember>();
         }
 
-        private IEnumerable<Council> GetCouncils()
+        public async Task<IEnumerable<Entry>> GetEntries(int councilId)
         {
-            var councils = new List<Council>() {
-                new Council { Id = 1, GuildId = 1, InstanceId = 1193},
-                new Council { Id = 2, GuildId = 1, InstanceId = 1190},
-                new Council { Id = 3, GuildId = 2, InstanceId = 1193}
-            };
+            try
+            {
+                var entries = await _connection.QueryAsync<Entry>("SELECT * FROM Entry WHERE CouncilId = @councilId ", new { councilId });
+                return entries;
+            }
+            catch (Exception e)
+            {
+                _logger.LogWarning(e, e.Message);
+            }
 
-            return councils;
+            return Enumerable.Empty<Entry>();
         }
 
-        private IEnumerable<CouncilMember> GetCouncilMembers()
+        public async Task<IEnumerable<Entry>> GetEntriesForItemByCharacter(int councilId, int itemId, string name, string realm)
         {
-            var members = new List<CouncilMember>() {
-                new CouncilMember { CouncilId = 1, Name = "Bsl", Realm = "stormscale"},
-                new CouncilMember { CouncilId = 1, Name = "Yukela", Realm = "stormscale"},
-                new CouncilMember { CouncilId = 2, Name = "Bsl", Realm = "stormscale"},
-                new CouncilMember { CouncilId = 2, Name = "Jsj", Realm = "stormscale"},
-                new CouncilMember { CouncilId = 2, Name = "Ibb", Realm = "stormscale"}
-            };
+            try
+            {
+                var entries = await _connection.QueryAsync<Entry>("SELECT * FROM Entry WHERE CouncilId = @councilId AND ItemId = @itemId AND Name = @name AND Realm = @realm", new { councilId, itemId, name, realm });
+                return entries;
+            }
+            catch (Exception e)
+            {
+                _logger.LogWarning(e, e.Message);
+            }
 
-            return members;
+            return Enumerable.Empty<Entry>();
         }
 
-        
+        public async Task<IEnumerable<Entry>> GetEntriesForCharacter(int councilId, string name, string realm)
+        {
+            try
+            {
+                var entries = await _connection.QueryAsync<Entry>("SELECT * FROM Entry WHERE CouncilId = @councilId AND Name = @name AND Realm = @realm", new { councilId, name, realm });
+                return entries;
+            }
+            catch (Exception e)
+            {
+                _logger.LogWarning(e, e.Message);
+            }
+
+            return Enumerable.Empty<Entry>();
+        }
+
+        public async Task<IEnumerable<Entry>> GetEntriesForItem(int councilId, int itemId)
+        {
+            try
+            {
+                var entries = await _connection.QueryAsync<Entry>("SELECT * FROM Entry WHERE CouncilId = @councilId AND ItemId = @itemId", new { councilId, itemId });
+                return entries;
+            }
+            catch (Exception e)
+            {
+                _logger.LogWarning(e, e.Message);
+            }
+
+            return Enumerable.Empty<Entry>();
+        }
+
+        public async Task<IEnumerable<Entry>> GetEntriesForEncounter(int councilId, int encounterId)
+        {
+            try
+            {
+                var entries = await _connection.QueryAsync<Entry>("SELECT * FROM Entry WHERE CouncilId = @councilId AND EncounterId = @encounterId", new { councilId, encounterId });
+                return entries;
+            }
+            catch (Exception e)
+            {
+                _logger.LogWarning(e, e.Message);
+            }
+
+            return Enumerable.Empty<Entry>();
+        }
+
+        public async Task SaveEntries(IEnumerable<Entry> entries)
+        {
+            await _connection.InsertAsync(entries);
+        }
     }
 }

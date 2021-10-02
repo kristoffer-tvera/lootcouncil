@@ -1,0 +1,77 @@
+﻿@page "/council/{CouncilId:int}/priority/{EncounterId:int}"
+@using Models.Shared;
+@model Lootcouncil.Pages.Council.PriorityModel
+
+<h1>@Model.Encounter.Name</h1>
+
+<div>
+    @foreach (var item in Model.Encounter.Items.Select(i => i.Item))
+    {
+        <div>
+            @{
+                RenderItem(item);
+                var entries = Model.Entries.Where(e => e.ItemId == item.Id);
+            }
+            <div class="prio-card__container">
+                @foreach (var entry in entries)
+                {
+                    var option = (Constants.Loot)entry.Option;
+
+                    <div class="prio-card mdl-card mdl-shadow--2dp" draggable>
+                        <div class="mdl-card__title mdl-card--expand">
+                            <h4>
+                                @entry.Name<br>
+                                Average: 226<br>
+                                Slot: 252
+                            </h4>
+                        </div>
+                        <div class="mdl-card__supporting-text">
+                            @option
+                        </div>
+                        <div class="mdl-card__actions mdl-card--border">
+                            <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect" href="#?delete=@entry.Name">
+                                Delete
+                            </a>
+                            <div class="mdl-layout-spacer"></div>
+                            <i class="material-icons">delete</i>
+                        </div>
+                    </div>
+
+                }
+            </div>
+        </div>
+    }
+
+</div>
+
+@section scripts{ 
+    <script src="https://cdn.jsdelivr.net/npm/@@shopify/draggable@1.0.0-beta.11/lib/draggable.bundle.js"></script>
+    <script>
+        void function () {
+            const containerSelector = '.prio-card__container';
+            const containers = document.querySelectorAll(containerSelector);
+
+            if (containers.length === 0) {
+                return false;
+            }
+
+            const sortable = new Draggable.Sortable(containers, {
+                draggable: '.prio-card',
+                mirror: {
+                    appendTo: containerSelector,
+                    constrainDimensions: true,
+                },
+            });
+        }();
+    </script>
+}
+
+@{
+    void RenderItem(Item item)
+    {
+        var name = item.Name;
+        var id = item.Id;
+        var link = "https://www.wowhead.com/item=" + id;
+        <a href="@link" data-wowhead="item=@id" target="_blank">[@name]</a>
+    }
+}

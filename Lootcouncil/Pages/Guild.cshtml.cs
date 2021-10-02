@@ -37,6 +37,11 @@ namespace Lootcouncil.Pages
             Guild = await _api.GetGuildRosterResponse(guild.Roster.Href, region);
             GuildActivities = await _api.GetGuildActivitiesResponse(guild.Activity.Href, region);
             Councils = await _db.GetCouncilsForGuild(guild.Id);
+
+            foreach (var council in Councils)
+            {
+                council.Instance = await _api.GetJournalInstanceResponse(council.InstanceId, region);
+            }
         }
     }
 }
