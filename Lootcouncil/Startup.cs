@@ -33,7 +33,7 @@ namespace Lootcouncil
 
             services.AddSession();
             services.AddMemoryCache();
-            
+
             services.AddRouting(options => options.LowercaseUrls = true);
 
             services.Configure<BlizzardSettings>(Configuration.GetSection(BlizzardSettings.Section));
@@ -70,13 +70,6 @@ namespace Lootcouncil
                     options.NonceCookie.SameSite = Microsoft.AspNetCore.Http.SameSiteMode.None;
                     options.NonceCookie.SecurePolicy = Microsoft.AspNetCore.Http.CookieSecurePolicy.Always;
                     options.NonceCookie.IsEssential = true;
-
-                    //var redirectToIdpHandler = options.Events.OnRedirectToIdentityProvider;
-                    //options.Events.OnRedirectToIdentityProvider = async context =>
-                    //{
-                    //    await redirectToIdpHandler(context);
-                    //    context.ProtocolMessage.RedirectUri = Configuration[$"{BlizzardSettings.Section}:Redirect"];
-                    //};
 
                     options.Scope.Clear();
                     options.Scope.Add("openid");

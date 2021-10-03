@@ -141,7 +141,7 @@ namespace Lootcouncil.Repository
         private async Task<T> ExecuteRequest<T>(int cacheTime, string path, string ns, string region, string accessToken = "")
         {
             var cacheKey = string.Concat(path, ns, region, accessToken);
-            if (_cache.TryGetValue<T>(cacheKey, out var response))
+            if (_cache.TryGetValue<T>(cacheKey, out var response) && response != null)
             {
                 return response;
             }

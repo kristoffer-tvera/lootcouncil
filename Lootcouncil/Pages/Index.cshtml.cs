@@ -55,6 +55,10 @@ namespace Lootcouncil.Pages
 
             var region = Request.Cookies.GetRegion();
             var profile = await _api.GetProfileSummary(region, accessToken);
+            if(profile == null)
+            {
+                return null;
+            }
 
             Character character = null;
             foreach (var account in profile.WowAccounts)
