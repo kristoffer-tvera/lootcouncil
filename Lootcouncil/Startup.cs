@@ -48,6 +48,7 @@ namespace Lootcouncil
                 {
                     options.Cookie.Name = Configuration["Cookie"];
                     options.Cookie.SameSite = Microsoft.AspNetCore.Http.SameSiteMode.None;
+                    options.Cookie.SecurePolicy = Microsoft.AspNetCore.Http.CookieSecurePolicy.Always;
                 })
                 .AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, options =>
                 {
@@ -59,6 +60,7 @@ namespace Lootcouncil
                     options.GetClaimsFromUserInfoEndpoint = true;
                     options.SaveTokens = true;
                     options.UseTokenLifetime = true;
+                    options.NonceCookie.SecurePolicy = Microsoft.AspNetCore.Http.CookieSecurePolicy.Always;
 
                     options.Scope.Clear();
                     options.Scope.Add("openid");
