@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -39,6 +40,11 @@ namespace Lootcouncil
             services.AddScoped<IApiRepository, ApiRepository>();
             services.AddScoped<IDbRepository, DbRepository>();
 
+            services.Configure<ForwardedHeadersOptions>(options => //Neccesary to run behind nginx proxy
+            {
+                options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+            });
+
             services.AddAuthentication(options =>
             {
                 options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
@@ -56,7 +62,7 @@ namespace Lootcouncil
                     options.Authority = Configuration[$"{BlizzardSettings.Section}:Authority"];
                     options.ClientId = Configuration[$"{BlizzardSettings.Section}:ClientId"];
                     options.ClientSecret = Configuration[$"{BlizzardSettings.Section}:ClientSecret"];
-                    
+
                     options.ResponseType = OpenIdConnectResponseType.CodeIdToken;
                     options.GetClaimsFromUserInfoEndpoint = true;
                     options.SaveTokens = true;
@@ -64,6 +70,13 @@ namespace Lootcouncil
                     options.NonceCookie.SameSite = Microsoft.AspNetCore.Http.SameSiteMode.None;
                     options.NonceCookie.SecurePolicy = Microsoft.AspNetCore.Http.CookieSecurePolicy.Always;
                     options.NonceCookie.IsEssential = true;
+
+                    //var redirectToIdpHandler = options.Events.OnRedirectToIdentityProvider;
+                    //options.Events.OnRedirectToIdentityProvider = async context =>
+                    //{
+                    //    await redirectToIdpHandler(context);
+                    //    context.ProtocolMessage.RedirectUri = Configuration[$"{BlizzardSettings.Section}:Redirect"];
+                    //};
 
                     options.Scope.Clear();
                     options.Scope.Add("openid");
@@ -75,6 +88,8 @@ namespace Lootcouncil
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseForwardedHeaders(); //Neccesary to run behind nginx proxy
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
