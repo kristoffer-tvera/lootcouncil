@@ -1,3 +1,4 @@
+using Lootcouncil.Logging;
 using Lootcouncil.Models;
 using Lootcouncil.Repository;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -39,6 +40,8 @@ namespace Lootcouncil
             services.Configure<BlizzardSettings>(Configuration.GetSection(BlizzardSettings.Section));
             services.AddScoped<IApiRepository, ApiRepository>();
             services.AddScoped<IDbRepository, DbRepository>();
+            services.AddHostedService<WebhookService>();
+            services.AddSingleton<WebhookRequestQueue>();
 
             services.Configure<ForwardedHeadersOptions>(options => //Neccesary to run behind nginx proxy
             {
