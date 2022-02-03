@@ -49,7 +49,7 @@ namespace Lootcouncil.Logging
         {
             var uri = new Uri(url);
             var client = new RestClient(uri.GetLeftPart(UriPartial.Authority));
-            client.UseSystemTextJson();
+            //client.UseSystemTextJson();
 
             var fields = new List<Field> {
                 new Field {
@@ -98,7 +98,7 @@ namespace Lootcouncil.Logging
                 Embeds = embeds
             };
 
-            var restRequest = new RestRequest(uri.AbsolutePath, Method.POST);
+            var restRequest = new RestRequest(uri.AbsolutePath, Method.Post);
             restRequest.AddJsonBody(request);
 
             var response = await client.ExecuteAsync(restRequest);

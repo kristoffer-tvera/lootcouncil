@@ -22,7 +22,7 @@ namespace Lootcouncil.Repository
             _expiry = DateTime.UtcNow;
             _option = options.Value;
             _client = new RestClient();
-            _client.UseSystemTextJson();
+            //_client.UseSystemTextJson();
             _cache = cache;
         }
 
@@ -43,7 +43,7 @@ namespace Lootcouncil.Repository
                 Authenticator = new HttpBasicAuthenticator(_option.ClientId, _option.ClientSecret)
             };
 
-            var request = new RestRequest("/oauth/token", Method.POST);
+            var request = new RestRequest("/oauth/token", Method.Post);
             request.AddParameter("grant_type", "client_credentials");
             var response = await client.ExecuteAsync<AuthToken>(request);
 
@@ -153,7 +153,9 @@ namespace Lootcouncil.Repository
 
         private async Task<T> ExecuteRequest<T>(string path, string ns, string region, string accessToken = "")
         {
-            _client.BaseUrl = new Uri($"https://{region}.api.blizzard.com");
+            //_client.BaseUrl = new Uri($"https://{region}.api.blizzard.com");
+            var _client = new RestClient(new Uri($"https://{region}.api.blizzard.com"));
+
 
             if (string.IsNullOrWhiteSpace(accessToken))
             {
@@ -161,7 +163,7 @@ namespace Lootcouncil.Repository
                 accessToken = _accessToken;
             }
 
-            var request = new RestRequest(path.ToLower(), Method.GET);
+            var request = new RestRequest(path.ToLower(), Method.Get);
             request.AddParameter("namespace", $"{ns}-{region}");
             request.AddParameter("locale", _option.Locale);
             request.AddParameter("access_token", accessToken);
@@ -198,9 +200,10 @@ namespace Lootcouncil.Repository
             var uri = new Uri(href);
             await Setup(region);
 
-            _client.BaseUrl = new Uri(uri.GetLeftPart(UriPartial.Authority));
+            //_client.BaseUrl = new Uri(uri.GetLeftPart(UriPartial.Authority));
+            var _client = new RestClient(new Uri(uri.GetLeftPart(UriPartial.Authority)));
 
-            var request = new RestRequest(uri.PathAndQuery, Method.GET);
+            var request = new RestRequest(uri.PathAndQuery, Method.Get);
             request.AddParameter("locale", _option.Locale);
             request.AddParameter("access_token", _accessToken);
 
