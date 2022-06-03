@@ -65,3 +65,8 @@ body {
     flex-wrap: wrap;
     /*justify-content: space-between;*/
 }
+
+.loot-priority--button {
+    border: 1px solid black;
+    border-radius: 5px;
+}

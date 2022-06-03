@@ -35,6 +35,9 @@ namespace Lootcouncil.Pages.Council
         {
             var region = Request.Cookies.GetRegion();
 
+            var council = await _db.GetCouncil(CouncilId);
+            var guild = await _api.GetGuildRosterResponse(council.GuildRealm, council.GuildName, council.GuildRegion);
+
             Entries = await _db.GetEntriesForEncounter(CouncilId, EncounterId);
             Encounter = await _api.GetJournalEncounterResponse(EncounterId, region);
         }

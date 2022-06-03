@@ -10,6 +10,7 @@ namespace Lootcouncil.Models.Db
         public int GuildId { get; set; }
         public string GuildName { get; set; }
         public string GuildRealm { get; set; }
+        public string GuildRegion { get; set; }
         public int InstanceId { get; set; }
 
         [Write(false)]

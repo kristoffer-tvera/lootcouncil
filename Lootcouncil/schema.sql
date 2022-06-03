@@ -3,6 +3,7 @@
 	`GuildId` INT(11) NOT NULL,
 	`GuildName` VARCHAR(50) NOT NULL COLLATE 'utf8_unicode_ci',
 	`GuildRealm` VARCHAR(50) NOT NULL COLLATE 'utf8_unicode_ci',
+	`GuildRegion` VARCHAR(50) NOT NULL COLLATE 'utf8_unicode_ci',
 	`InstanceId` INT(11) NOT NULL,
 	PRIMARY KEY (`Id`)
 );
